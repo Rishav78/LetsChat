@@ -11,7 +11,7 @@ import { Provider } from 'react-native-paper';
 
 const Welcome = props => {
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <Provider>
         <View style={{ flex: 1 }}>
           <View style={styles.titleContainer}>

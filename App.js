@@ -7,26 +7,14 @@
  */
 
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import Welcome from './screens/Welcome';
-import Login from './screens/Login/Login';
-
-const Stack = createStackNavigator();
+import Main from './screens/Main';
+import AuthContextProvider from './src/contexts/AuthContext';
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Login"
-          component={Login}
-          options={{ headerShown: false }} />
-        {/* <Stack.Screen 
-            name="Welcome" 
-            component={Welcome}
-            options={{ headerShown: false }} /> */}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthContextProvider>
+      <Main />
+    </AuthContextProvider>
   );
 };
 

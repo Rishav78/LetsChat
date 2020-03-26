@@ -9,7 +9,7 @@ import {
 import { Provider } from 'react-native-paper';
 
 
-const Welcome = props => {
+const Welcome = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Provider>
@@ -26,7 +26,10 @@ const Welcome = props => {
                 Read our Privacy Policy. Tap "Agree and continue"
                 to accept the Terms and Services
               </Text>
-              <TouchableOpacity activeOpacity={0.6} style={styles.agree}>
+              <TouchableOpacity 
+                activeOpacity={0.6} 
+                style={styles.agree}
+                onPress={() => navigation.navigate('Login')}>
                 <Text style={{ color: '#FFF', fontWeight: 'bold' }}>AGREE AND CONTINUE</Text>
               </TouchableOpacity>
             </View>

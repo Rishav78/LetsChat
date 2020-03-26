@@ -7,45 +7,20 @@ import {
   TouchableOpacity,
   Alert
 } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 import { TextInput, Provider, FAB } from 'react-native-paper';
 import Header from './Header';
 
 const emailRegx = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
-const Login = props => {
+const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const disable = !emailRegx.test(email) || !password;
 
-  const unauthenticate = err => {
-    console.log(err);
-  }
-
   const authenticate = async _ => {
-    const res = await fetch('http://192.168.43.215:8000/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ 
-        query: `
-          query {
-            login(email: "${email}", password: "${password}") {
-              err
-              token
-              expiresIn
-            }
-          }
-        `
-      })
-    });
-    const data = await res.json();
-    if(data) {
-      return Alert.alert(data.token);
-    }
-    AsyncStorage.setItem('token', data.token);
+    
+    navigation.navigate('Welcome')
   }
 
   return (

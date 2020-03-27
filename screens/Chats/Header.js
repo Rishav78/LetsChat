@@ -6,15 +6,21 @@ import {
   Appbar,
   Menu
 } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native'
 import Header from '../../src/components/Header';
 
+
 const ChatsAppBar = ({ search }) => {
+  const navigation = useNavigation();
   const [visible, setVisible] = useState(false);
   return (
     <Appbar.Header>
       <Appbar.Content
         title="LetsChat"
       />
+      <Appbar.Action
+        icon="account-plus"
+        onPress={() => navigation.navigate('AddFriend')} />
       <Appbar.Action
         icon="magnify"
         onPress={search} />

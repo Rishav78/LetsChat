@@ -28,7 +28,7 @@ const Login = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: '#FFF' }}>
         <View style={{ marginBottom: 30 }}>
           <TextInput
             label='Email'

@@ -25,6 +25,9 @@ const Auth = props => {
         component={Login}
         options={{
           title: 'Enter your email and password',
+          headerStyle: {
+            elevation: 0
+          },
           headerRight: () => (
             <Menu
               visible={show}

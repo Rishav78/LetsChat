@@ -9,12 +9,14 @@ import {
 } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { ChatsContext } from '../../src/contexts/Chats';
+import User from '../../src/components/User';
 
 const Chats = ({ navigation }) => {
   const { chats } = useContext(ChatsContext);
   return (
     <SafeAreaView style={{ flex: 1}}>
       <View style={{ flex: 1}}>
+        {/* <User /> */}
       </View>
       <FAB
           small

@@ -13,7 +13,7 @@ const Welcome = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Provider>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: '#FFF' }}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Welcome to LetsChat</Text>
           </View>

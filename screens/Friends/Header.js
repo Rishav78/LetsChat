@@ -8,12 +8,19 @@ import {
   StyleSheet
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Header from '../../src/components/Header';
+import SearchBar from '../../src/components/SearchBar';
 
-const FriendsAppBar = ({ search }) => {
+const FriendsAppBar = ({ onChange, value, count }) => {
   const navigation = useNavigation();
+  const [search, setSearch] = useState(false);
   const [visible, setVisible] = useState(false);
   return (
+    search ? 
+    <SearchBar 
+      onBack={() => setSearch(false)}
+      onChange={onChange}
+      value={value}
+    /> :
     <Appbar.Header>
       <Appbar.BackAction
         onPress={navigation.goBack}
@@ -21,12 +28,12 @@ const FriendsAppBar = ({ search }) => {
 
       <Appbar.Content
         title="Select Friend"
-        subtitle="12 Friends"
+        subtitle={`${count} Friends`}
       />
 
       <Appbar.Action
         icon="magnify"
-        onPress={search}
+        onPress={() => setSearch(!search)}
       />
 
       <Menu
@@ -62,6 +69,6 @@ const styles = StyleSheet.create({
   items: {
     paddingHorizontal: 25
   }
-})
+});
 
-export default () => <Header AppBar={FriendsAppBar} />
+export default FriendsAppBar;

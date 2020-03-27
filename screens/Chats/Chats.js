@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -7,12 +7,14 @@ import {
 import {
   Provider
 } from 'react-native-paper';
-import Header from './Header';
+import Header from './AppBar';
+import { ChatsContext } from '../../src/contexts/Chats';
 
 const Chats = ({ navigation }) => {
+  const { chats } = useContext(ChatsContext);
+  chats();
   return (
     <SafeAreaView>
-      <Header />
       <View>
 
       </View>

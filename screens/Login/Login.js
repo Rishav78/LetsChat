@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   SafeAreaView,
@@ -7,19 +7,23 @@ import {
   TouchableOpacity,
   Alert
 } from 'react-native';
-import { TextInput, Provider, FAB } from 'react-native-paper';
+import { TextInput, FAB } from 'react-native-paper';
+import { AuthContext } from '../../src/contexts/AuthContext';
 
 const emailRegx = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login } = useContext(AuthContext);
 
   const disable = !emailRegx.test(email) || !password;
 
   const authenticate = async _ => {
-
-    navigation.navigate('Welcome')
+    const auth = await login(email, password);
+    if(auth.err) {
+      return Alert.alert('Auth Error', auth.err);
+    }
   }
 
   return (

@@ -1,23 +1,28 @@
-import React, { useState, useContext } from 'react';
+import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import {
-  Menu,
-  IconButton
-} from 'react-native-paper';
-import { Text } from 'react-native';
-import { AuthContext } from '../src/contexts/AuthContext';
 import Chats from './Chats/Chats';
+import Header from './Chats/Header';
+import ChatsContextProvider from '../src/contexts/Chats';
+import SocketContextProvider from '../src/contexts/Socket';
 
 const Stack = createStackNavigator();
 
 const Home = () => {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Chats"
-        component={Chats}
-        />
-    </Stack.Navigator>
+    <SocketContextProvider>
+      <ChatsContextProvider>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Chats"
+            component={Chats}
+            options={{
+              title: "LetsChat",
+              header: () => <Header />
+            }}
+          />
+        </Stack.Navigator>
+      </ChatsContextProvider>
+    </SocketContextProvider>
   );
 }
 

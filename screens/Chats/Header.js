@@ -1,20 +1,17 @@
-import React from 'react';
-import {
-  Appbar
-} from 'react-native-paper';
+import React, { useState } from 'react';
+import ChatsAppBar from './AppBar';
+import SearchBar from '../../src/components/SearchBar';
 
-const ChatsHeader = () => {
-  return (
-    <Appbar.Header>
-      <Appbar.Content
-        title="LetsChat"
-      />
-      <Appbar.Action 
-        icon="magnify" />
-      <Appbar.Action 
-        icon="dots-vertical" />
-    </Appbar.Header>
-  );
+
+const Header = () => {
+  const [search, setSearch] = useState(false);
+  return !search ?
+    <ChatsAppBar
+      search={() => setSearch(search => !search)} /> :
+    <SearchBar
+      search={() => setSearch(search => !search)}
+      onChange={() => { }}
+      onBack={() => setSearch(false)} />
 }
 
-export default ChatsHeader;
+export default Header;

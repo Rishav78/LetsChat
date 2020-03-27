@@ -7,10 +7,12 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import User from '../../src/components/User';
+import Header from './Header';
 
 const AddFriend = () => {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
 
   const fetchUsers = async _ => {
     const token = await AsyncStorage.getItem('token');
@@ -37,7 +39,6 @@ const AddFriend = () => {
       })
     });
     const { data } = await res.json();
-    // console.log(data.users.users)
     setUsers(data.users.users);
     setLoading(false);
   }
@@ -54,11 +55,13 @@ const AddFriend = () => {
         <ActivityIndicator size="large" color="#0000ff" />
       </SafeAreaView> :
       <SafeAreaView style={{ flex: 1 }}>
+        <Header value={searchValue} onChange={setSearchValue} />
         <View style={{ flex: 1, backgroundColor: '#FFF'}}>
           <FlatList
-            data={users}
+            data={ !searchValue ? users : users.filter( e => new RegExp(searchValue, 'i').test(e.firstname+' '+e.lastname))}
             renderItem={(data) => <User key={data.index} data={data.item} />}
             keyExtractor={item => item._id}
+            style={{ marginTop: 10 }}
           />
         </View>
       </SafeAreaView>

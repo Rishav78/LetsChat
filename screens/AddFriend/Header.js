@@ -8,27 +8,40 @@ import {
   StyleSheet
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Header from '../../src/components/Header';
+import Searchbar from '../../src/components/SearchBar';
 
-const AddFriendsAppBar = ({ search }) => {
+const AddFriendsAppBar = ({ value, onChange }) => {
   const navigation = useNavigation();
+  const [search, setSearch] = useState(false);
   const [visible, setVisible] = useState(false);
+
+  const hideSearchBar = () => {
+    onChange('');
+    setSearch(false);
+  }
+
   return (
-    <Appbar.Header>
-      <Appbar.BackAction
-        onPress={navigation.goBack}
-      />
+    search ?
+      <Searchbar
+        value={value}
+        onChange={onChange}
+        onBack={hideSearchBar} /> :
 
-      <Appbar.Content
-        title="Add Friend"
-      />
+      <Appbar.Header>
+        <Appbar.BackAction
+          onPress={navigation.goBack}
+        />
 
-      <Appbar.Action
-        icon="magnify"
-        onPress={search}
-      />
+        <Appbar.Content
+          title="Add Friend"
+        />
 
-    </Appbar.Header>
+        <Appbar.Action
+          icon="magnify"
+          onPress={() => setSearch( prevState => !prevState)}
+        />
+
+      </Appbar.Header>
   );
 }
 
@@ -38,4 +51,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default () => <Header AppBar={AddFriendsAppBar} />
+export default AddFriendsAppBar;

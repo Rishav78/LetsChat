@@ -9,7 +9,7 @@ const Splash = ({ navigation }) => {
   return (
     <View style={ styles.container }>
       <Image
-        style={{ width: 300, height: 300}}
+        style={{ width: 200, height: 200}}
         source={require('../assets/logo.png')} />
     </View>
   );

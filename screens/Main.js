@@ -1,19 +1,43 @@
 //@ts-check
-import React, { useContext } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Welcome from './Welcome';
-import Login from './Login/Login';
-import { AuthContext } from '../src/contexts/AuthContext';
+import {
+  Provider
+} from 'react-native-paper';
+import Auth from './AuthStack';
 
 const Stack = createStackNavigator();
 
 const Main = props => {
-  const { authenticated } = useContext(AuthContext);
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {!authenticated ?
+    <Provider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen 
+            name="Auth" 
+            component={Auth}
+            options={{
+              headerShown: false
+            }} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
+  );
+}
+
+/*
+<Stack.Screen 
+          name="Chats" 
+          component={Chats}
+          options={{ headerShown: false }} />
+
+
+*/
+
+/*
+
+{!authenticated ?
           <>
             <Stack.Screen
               name="Welcome"
@@ -26,9 +50,6 @@ const Main = props => {
           <>
           </>
         }
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
 
+*/
 export default Main;

@@ -1,23 +1,34 @@
 import React, { useState } from 'react';
 import {
-  Text
-} from 'react-native';
-import {
   Appbar,
   Menu
 } from 'react-native-paper';
+import {
+  Text,
+  StyleSheet
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Header from '../../src/components/Header';
 
-const ChatsAppBar = ({ search }) => {
+const FriendsAppBar = ({ search }) => {
+  const navigation = useNavigation();
   const [visible, setVisible] = useState(false);
   return (
     <Appbar.Header>
-      <Appbar.Content
-        title="LetsChat"
+      <Appbar.BackAction
+        onPress={navigation.goBack}
       />
+
+      <Appbar.Content
+        title="Select Friend"
+        subtitle="12 Friends"
+      />
+
       <Appbar.Action
         icon="magnify"
-        onPress={search} />
+        onPress={search}
+      />
+
       <Menu
         visible={visible}
         onDismiss={() => setVisible(false)}
@@ -30,23 +41,27 @@ const ChatsAppBar = ({ search }) => {
           />
         }>
         <Menu.Item
+          style={styles.items}
           onPress={() => { }}
-          title={<Text>New group</Text>} />
+          title={<Text>Invite friends</Text>} />
         <Menu.Item
+          style={styles.items}
           onPress={() => { }}
-          title={<Text>New broadcast</Text>} />
+          title={<Text>Refresh</Text>} />
         <Menu.Item
+          style={styles.items}
           onPress={() => { }}
-          title={<Text>LetsChat Web</Text>} />
-        <Menu.Item
-          onPress={() => { }}
-          title={<Text>Starred messages</Text>} />
-        <Menu.Item
-          onPress={() => { }}
-          title={<Text>Settings</Text>} />
+          title={<Text>Help</Text>} />
       </Menu>
+
     </Appbar.Header>
   );
 }
 
-export default () => <Header AppBar={ChatsAppBar} />
+const styles = StyleSheet.create({
+  items: {
+    paddingHorizontal: 25
+  }
+})
+
+export default () => <Header AppBar={FriendsAppBar} />

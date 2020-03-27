@@ -1,9 +1,11 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import Chats from './Chats/Chats';
-import Header from './Chats/Header';
+import ChatsHeader from './Chats/Header';
 import ChatsContextProvider from '../src/contexts/Chats';
 import SocketContextProvider from '../src/contexts/Socket';
+import Friends from './Friends/Friends';
+import FriendsHeader from './Friends/Header';
 
 const Stack = createStackNavigator();
 
@@ -17,9 +19,14 @@ const Home = () => {
             component={Chats}
             options={{
               title: "LetsChat",
-              header: () => <Header />
+              header: () => <ChatsHeader  />
             }}
           />
+          <Stack.Screen
+            name="Friends"
+            component={Friends}
+            options={{ header: () => <FriendsHeader />}}
+            />
         </Stack.Navigator>
       </ChatsContextProvider>
     </SocketContextProvider>

@@ -5,11 +5,13 @@ export const AuthContext = createContext();
 
 const AuthContextProvider = props => {
   const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    currentUser().then( ({err}) => {
+    currentUser().then( ({err, user}) => {
       if(!err) {
         setAuthenticated(true);
+        setUser(user._id);
       }
     })
   }, []);
@@ -69,7 +71,7 @@ const AuthContextProvider = props => {
   }
 
   return (
-    <AuthContext.Provider value={{ login, authenticated, currentUser }}>
+    <AuthContext.Provider value={{ login, authenticated, currentUser, user }}>
       { props.children }
     </AuthContext.Provider>
   );

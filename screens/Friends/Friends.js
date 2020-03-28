@@ -13,6 +13,7 @@ import User from '../../src/components/User';
 
 const Friends = () => {
   const [friends, setFriends] = useState([]);
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
@@ -54,14 +55,15 @@ const Friends = () => {
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#0000ff" />
       </SafeAreaView> :
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         <Header
           count={friends.length}
-          onChange={() => { }}
-          value={"1"} />
-        <View>
+          onChange={setSearch}
+          value={search} />
+        <View style={{ flex: 1 }}>
           <FlatList 
-            data={friends}
+            style={{ flex: 1, backgroundColor: '#FFF'}}
+            data={ !search ? friends : friends.filter( e => new RegExp(search, 'i').test(`${e.firstname} ${e.lastname}`))}
             renderItem={(data) =>
               <User
                 key={data.index}

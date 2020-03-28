@@ -1,21 +1,30 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   StyleSheet,
   View,
-  SafeAreaView
+  SafeAreaView,
+  FlatList,
+  Text
 } from 'react-native';
 import {
   FAB
 } from 'react-native-paper';
 import { ChatsContext } from '../../src/contexts/Chats';
+import Chat from '../../src/components/Chat';
+import Header from './Header';
 
 const Chats = ({ navigation }) => {
   const { availableChats } = useContext(ChatsContext);
+  const [search, setSeach] = useState('');
+  console.log(availableChats);
   return (
     <SafeAreaView style={{ flex: 1}}>
-      <View style={{ flex: 1}}>
-        {/* <User /> */}
-      </View>
+      <Header value={search} onChange={setSeach} />
+      <FlatList
+        style={{ flex: 1, backgroundColor: '#FFF'}}
+        data={ !search ? availableChats : availableChats.filter(e => new RegExp(search, 'i').test(e.chatname))}
+        renderItem={(data) => <Chat data={data.item} />}
+        keyExtractor={item => item._id} />
       <FAB
           small
           icon="message-text"

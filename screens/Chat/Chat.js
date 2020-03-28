@@ -13,8 +13,7 @@ const Chat = ({ route }) => {
   const fetchChatInfo = async () => {
     const { user } = route.params;
     for(let i=0; i<availableChats.length;i++) {
-      const member = availableChats[i].chatmembers.filter( e => e._id === user);
-      if(member.length === 1 && availableChats[i].chattype === 'personal') {
+      if( availableChats[i].chattype === 'personal' && availableChats[i].receiver._id === user) {
         console.log('exists');
         return;
       }

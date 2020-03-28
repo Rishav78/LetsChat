@@ -1,7 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import Chats from './Chats/Chats';
-import ChatsHeader from './Chats/Header';
 import ChatsContextProvider from '../src/contexts/Chats';
 import SocketContextProvider from '../src/contexts/Socket';
 import Friends from './Friends/Friends';
@@ -20,7 +19,7 @@ const Home = () => {
             component={Chats}
             options={{
               title: "LetsChat",
-              header: () => <ChatsHeader />
+              headerShown: false
             }}
           />
           <Stack.Screen

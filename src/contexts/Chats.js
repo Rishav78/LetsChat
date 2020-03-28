@@ -1,10 +1,12 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
+import { AuthContext } from './AuthContext';
 
 export const ChatsContext = createContext();
 
 const ChatsContextProvider = ({ children }) => {
   const [availableChats, setAvailableChats] = useState([]);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     chats();
@@ -23,10 +25,13 @@ const ChatsContextProvider = ({ children }) => {
           query {
             chats {
               chats{
+                _id
                 chattype
                 chatname
                 chatmembers {
                   _id
+                  firstname
+                  lastname
                 }
                 createdAt
                 updatedAt
@@ -36,8 +41,17 @@ const ChatsContextProvider = ({ children }) => {
         `
       })
     });
-    const {data} = await res.json();
-    setAvailableChats(data.chats.chats);
+    const { data } = await res.json();
+    const chats = data.chats.chats;
+    for(let i=0;i<chats.length;i++) {
+      const chatmembers = chats[i].chatmembers.filter(e => e._id !== user);
+      chats[i].receiver = chats[i].chattype === 'personal' ? chatmembers[0] : chatmembers;
+      if(chats[i].chattype === 'personal') {
+        chats[i].chatname = `${chats[i].receiver.firstname} ${chats[i].receiver.lastname}`
+      }
+      delete chats[i].chatmembers;
+    }
+    setAvailableChats(chats);
   }
 
   const createPersonalChat = async member => {

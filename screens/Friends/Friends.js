@@ -7,12 +7,14 @@ import {
   ActivityIndicator
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import { useNavigation } from '@react-navigation/native';
 import Header from './Header';
 import User from '../../src/components/User';
 
 const Friends = () => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
   const fetchFriends = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -64,6 +66,7 @@ const Friends = () => {
               <User
                 key={data.index}
                 data={data.item}
+                onPress={() => navigation.navigate('Chat', { user: data.item._id })}
               />}
             keyExtractor={item => item._id}
           />

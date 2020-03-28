@@ -1,9 +1,14 @@
-import React, { createContext } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 
 export const ChatsContext = createContext();
 
 const ChatsContextProvider = ({ children }) => {
+  const [availableChats, setAvailableChats] = useState([]);
+
+  useEffect(() => {
+    chats();
+  }, []);
 
   const chats = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -31,12 +36,14 @@ const ChatsContextProvider = ({ children }) => {
         `
       })
     });
-    const data = await res.json();
-    return data.data.chats;
+    const {data} = await res.json();
+    setAvailableChats(data.chats);
   }
 
+  
+
   return (
-    <ChatsContext.Provider value={{ chats }}>
+    <ChatsContext.Provider value={{ availableChats }}>
       { children }
     </ChatsContext.Provider>
   );

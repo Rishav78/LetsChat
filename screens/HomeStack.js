@@ -6,6 +6,7 @@ import ChatsContextProvider from '../src/contexts/Chats';
 import SocketContextProvider from '../src/contexts/Socket';
 import Friends from './Friends/Friends';
 import AddFriend from './AddFriend/AddFriend';
+import Chat from './Chat/Chat';
 
 const Stack = createStackNavigator();
 
@@ -30,6 +31,10 @@ const Home = () => {
           <Stack.Screen
             name="AddFriend"
             component={AddFriend}
+            options={{ headerShown: false }} />
+          <Stack.Screen
+            name="Chat"
+            component={Chat}
             options={{ headerShown: false }} />
         </Stack.Navigator>
       </ChatsContextProvider>

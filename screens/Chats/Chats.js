@@ -12,7 +12,7 @@ import { ChatsContext } from '../../src/contexts/Chats';
 import User from '../../src/components/User';
 
 const Chats = ({ navigation }) => {
-  const { chats } = useContext(ChatsContext);
+  const { availableChats } = useContext(ChatsContext);
   return (
     <SafeAreaView style={{ flex: 1}}>
       <View style={{ flex: 1}}>

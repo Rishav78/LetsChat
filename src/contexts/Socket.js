@@ -9,6 +9,10 @@ const SocketContextProvider = props => {
 
   useEffect(() => {
     login();
+    return () => {
+      socket.removeAllListeners('unauthorized');
+      socket.disconnect();
+    }
   }, []);
 
   const login = async () => {
@@ -17,7 +21,6 @@ const SocketContextProvider = props => {
     socket.on('unauthorized', function (err) {
       console.log("There was an error with the authentication:", err.message);
     });
-    return () => socket.removeAllListeners('unauthorized');
   }
 
   return (

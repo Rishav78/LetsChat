@@ -16,22 +16,24 @@ import Header from './Header';
 const Chats = ({ navigation }) => {
   const { availableChats } = useContext(ChatsContext);
   const [search, setSeach] = useState('');
-  console.log(availableChats);
   return (
-    <SafeAreaView style={{ flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       <Header value={search} onChange={setSeach} />
       <FlatList
-        style={{ flex: 1, backgroundColor: '#FFF'}}
-        data={ !search ? availableChats : availableChats.filter(e => new RegExp(search, 'i').test(e.chatname))}
-        renderItem={(data) => <Chat data={data.item} />}
+        style={{ flex: 1, backgroundColor: '#FFF' }}
+        data={!search ? availableChats : availableChats.filter(e => new RegExp(search, 'i').test(e.chatname))}
+        renderItem={(data) =>
+          <Chat
+            data={data.item}
+            onPress={() => navigation.navigate('Chat', { chat: { _id: data.item._id, index: data.index } })} />}
         keyExtractor={item => item._id} />
       <FAB
-          small
-          icon="message-text"
-          color="#FFF"
-          style={styles.newChat}
-          onPress={() => navigation.navigate('Friends')}
-        />
+        small
+        icon="message-text"
+        color="#FFF"
+        style={styles.newChat}
+        onPress={() => navigation.navigate('Friends')}
+      />
     </SafeAreaView>
   );
 }

@@ -75,12 +75,36 @@ const ChatsContextProvider = ({ children }) => {
       })
     });
     const data = await res.json();
-    console.log(data);
     return data;
   }
 
+  const messages = async _id => {
+    const token = await AsyncStorage.getItem('token');
+    const res = await fetch('http://192.168.43.215:8000/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Barrer ${token}`
+      },
+      body: JSON.stringify({
+        query : `
+          query {
+            chat(_id: "${_id}") {
+              messages {
+                _id
+                message
+              }
+            }
+          }
+        `
+      })
+    });
+    const {data} = await res.json();
+    return data.chat.messages;
+  }
+
   return (
-    <ChatsContext.Provider value={{ availableChats, createPersonalChat }}>
+    <ChatsContext.Provider value={{ availableChats, createPersonalChat, messages }}>
       { children }
     </ChatsContext.Provider>
   );

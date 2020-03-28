@@ -22,12 +22,12 @@ const ChatsContextProvider = ({ children }) => {
         query: `
           query {
             chats {
-              err
-              chats {
-                _id
+              chats{
                 chattype
                 chatname
-                imageid
+                chatmembers {
+                  _id
+                }
                 createdAt
                 updatedAt
               }
@@ -37,13 +37,36 @@ const ChatsContextProvider = ({ children }) => {
       })
     });
     const {data} = await res.json();
-    setAvailableChats(data.chats);
+    setAvailableChats(data.chats.chats);
   }
 
-  
+  const createPersonalChat = async member => {
+    const token = await AsyncStorage.getItem('token');
+    const res = await fetch('http://192.168.43.215:8000/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Barrer ${token}`
+      },
+      body: JSON.stringify({
+        query: `
+          mutation{
+            CreatePersonalChat(InputChat: {
+              chatmember: "${member}"
+            }) {
+              _id
+            }
+          }
+        `
+      })
+    });
+    const data = await res.json();
+    console.log(data);
+    return data;
+  }
 
   return (
-    <ChatsContext.Provider value={{ availableChats }}>
+    <ChatsContext.Provider value={{ availableChats, createPersonalChat }}>
       { children }
     </ChatsContext.Provider>
   );

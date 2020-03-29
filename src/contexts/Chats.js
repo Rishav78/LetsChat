@@ -65,17 +65,27 @@ const ChatsContextProvider = ({ children }) => {
       body: JSON.stringify({
         query: `
           mutation{
-            CreatePersonalChat(InputChat: {
-              chatmember: "${member}"
-            }) {
+            CreatePersonalChat(InputChat: { chatmember: "${member}" }) {
               _id
+              chattype
+              chatname
+              chatmembers {
+                _id
+                firstname
+                lastname
+              }
+              createdAt
+              updatedAt
             }
           }
         `
       })
     });
     const data = await res.json();
-    return data;
+    const chat = data.CreatePersonalChat;
+    chat.receiver = chat.chatmembers.filter(e => e._id !== user)[0];
+    delete chat.chatmembers;
+    setAvailableChats( prevState => [chat, ...prevState]);
   }
 
   const messages = async _id => {

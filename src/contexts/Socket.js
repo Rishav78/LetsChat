@@ -4,8 +4,9 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 export const SocketContext = createContext();
 
+const socket = SocketIO('http://192.168.43.215:8000');
+
 const SocketContextProvider = props => {
-  const socket = SocketIO('http://192.168.43.215:8000');
 
   useEffect(() => {
     login();

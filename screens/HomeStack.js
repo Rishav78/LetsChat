@@ -6,6 +6,7 @@ import SocketContextProvider from '../src/contexts/Socket';
 import Friends from './Friends/Friends';
 import AddFriend from './AddFriend/AddFriend';
 import Chat from './Chat/Chat';
+import UserContextProvider from '../src/contexts/User';
 
 const Stack = createStackNavigator();
 
@@ -13,29 +14,31 @@ const Home = () => {
   return (
     <SocketContextProvider>
       <ChatsContextProvider>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Chats"
-            component={Chats}
-            options={{
-              title: "LetsChat",
-              headerShown: false
-            }}
-          />
-          <Stack.Screen
-            name="Friends"
-            component={Friends}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="AddFriend"
-            component={AddFriend}
-            options={{ headerShown: false }} />
-          <Stack.Screen
-            name="Chat"
-            component={Chat}
-            options={{ headerShown: false }} />
-        </Stack.Navigator>
+        <UserContextProvider>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="Chats"
+              component={Chats}
+              options={{
+                title: "LetsChat",
+                headerShown: false
+              }}
+            />
+            <Stack.Screen
+              name="Friends"
+              component={Friends}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="AddFriend"
+              component={AddFriend}
+              options={{ headerShown: false }} />
+            <Stack.Screen
+              name="Chat"
+              component={Chat}
+              options={{ headerShown: false }} />
+          </Stack.Navigator>
+        </UserContextProvider>
       </ChatsContextProvider>
     </SocketContextProvider>
   );

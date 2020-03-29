@@ -6,7 +6,7 @@ import {
 import { Text} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const Header = () => {
+const Header = ({ data }) => {
   const [visible, setVisible] = useState(false);
   const navigation = useNavigation();
   return (
@@ -15,7 +15,7 @@ const Header = () => {
         onPress={navigation.goBack}
       />
       <Appbar.Content
-        title="Maa Bap or Beta"
+        title={`${data.firstname} ${data.lastname}`}
         subtitle="online"
       />
       <Menu

@@ -16,12 +16,15 @@ import Header from './Header';
 const Chats = ({ navigation }) => {
   const { availableChats } = useContext(ChatsContext);
   const [search, setSeach] = useState('');
+
+  const chats = Object.values(availableChats);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Header value={search} onChange={setSeach} />
       <FlatList
         style={{ flex: 1, backgroundColor: '#FFF' }}
-        data={!search ? availableChats : availableChats.filter(e => new RegExp(search, 'i').test(e.chatname))}
+        data={!search ? chats : chats.filter(e => new RegExp(search, 'i').test(e.chatname))}
         renderItem={(data) =>
           <Chat
             data={data.item}

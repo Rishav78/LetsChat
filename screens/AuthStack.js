@@ -9,6 +9,7 @@ import { Text } from 'react-native';
 import Login from './Login/Login';
 import { AuthContext } from '../src/contexts/AuthContext';
 import Welcome from './Welcome/Welcome';
+import Verify from './Verify/Verify';
 
 const Stack = createStackNavigator();
 
@@ -24,7 +25,7 @@ const Auth = props => {
         name="Login"
         component={Login}
         options={{
-          title: 'Enter your email and password',
+          title: 'Enter your phone number',
           headerStyle: {
             elevation: 0
           },
@@ -45,6 +46,11 @@ const Auth = props => {
             </Menu>
           )
         }}
+      />
+      <Stack.Screen
+        name="Verify"
+        component={Verify}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

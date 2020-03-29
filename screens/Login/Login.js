@@ -13,55 +13,47 @@ import { AuthContext } from '../../src/contexts/AuthContext';
 const emailRegx = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const Login = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [prefix, setPrefix] = useState('+91');
+  const [phoneno, setPhoneno] = useState('');
   const { login } = useContext(AuthContext);
-
-  const disable = !emailRegx.test(email) || !password;
-
-  const authenticate = async _ => {
-    const auth = await login(email, password);
-    if(auth.err) {
-      return Alert.alert('Auth Error', auth.err);
-    }
-  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, backgroundColor: '#FFF' }}>
-        <View style={{ marginBottom: 30 }}>
-          <TextInput
-            label='Email'
-            value={email}
-            style={styles.input}
-            onChangeText={setEmail}
-          />
-          <TextInput
-            label='Password'
-            value={password}
-            secureTextEntry={true}
-            style={styles.input}
-            onChangeText={setPassword}
-          />
+        <View style={{ marginHorizontal: 30 }}>
+          <Text style={{ textAlign: 'center', lineHeight: 25, fontSize: 14}}>
+            LetsChat will send an SMS message to verify your phone number.
+            What's my number ?
+          </Text>
+        </View>
+        <View style={{ paddingHorizontal: 80, flex: 1 }}>
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ width: 50 }}>
+              <TextInput
+                value={prefix}
+                style={styles.input}
+                onChangeText={setPrefix}
+              />
+            </View>
+            <View style={{ flex: 1, marginLeft: 20 }}>
+              <TextInput
+                value={phoneno}
+                style={styles.input}
+                placeholder="phone number"
+                onChangeText={setPhoneno}
+              />
+            </View>
+          </View>
         </View>
         <View style={styles.footer}>
           <TouchableOpacity
-            disabled={disable}
-            style={disable ?
-              { ...styles.login, backgroundColor: '#808080' } :
-              styles.login}
-            activeOpacity={0.6}
-            onPress={authenticate}>
+            style={styles.login}
+            onPress={() => navigation.navigate('Verify')}
+            activeOpacity={0.6}>
             <Text style={{ color: '#FFF' }}>Login</Text>
           </TouchableOpacity>
         </View>
       </View>
-      <FAB
-        small
-        style={styles.signup}
-        icon="plus"
-        onPress={() => { }}
-      />
     </SafeAreaView>
   );
 }

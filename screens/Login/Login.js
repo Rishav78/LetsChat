@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
 import {
   View,
   SafeAreaView,
@@ -25,6 +26,8 @@ const Login = ({ navigation }) => {
     if(!data.success) {
       return Alert.alert('Error', data.err);
     }
+    AsyncStorage.setItem('status', 'otp');
+    AsyncStorage.setItem('phone', JSON.stringify({ prefix, phoneno }));
     navigation.navigate('Verify', { phoneno, prefix });
   }
 

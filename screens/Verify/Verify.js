@@ -6,7 +6,8 @@ import {
   Text,
   StyleSheet,
   Alert,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
 
 import {
@@ -15,7 +16,7 @@ import {
 } from 'react-native-paper';
 import Header from './Header';
 
-const Verify = ({ route }) => {
+const Verify = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
   const { phoneno, prefix } = route.params;
 
@@ -39,12 +40,14 @@ const Verify = ({ route }) => {
           `
         })
       });
-      setLoading(false);
       const { data } = await res.json();
       if(data.verifyUser.err) {
+        setLoading(false);
         return Alert.alert('Error', data.verifyUser.err);
       }
+      AsyncStorage.setItem('status', 'verified');
       AsyncStorage.setItem('token', data.verifyUser.token);
+      navigation.navigate('Basicprofile', { phoneno, prefix });
     }
   }
 

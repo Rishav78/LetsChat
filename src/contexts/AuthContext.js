@@ -40,6 +40,7 @@ const AuthContextProvider = props => {
 
   const currentUser = async _ => {
     const token = await AsyncStorage.getItem('token');
+    console.log(token);
     if(!token) {
       return { err: 'unauthenticated'};
     }
@@ -62,7 +63,7 @@ const AuthContextProvider = props => {
         `
       })
     });
-    const { data } = await res.json();
+    const {data} = await res.json();
     return data.currentUser
   }
 

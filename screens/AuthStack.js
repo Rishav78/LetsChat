@@ -10,6 +10,7 @@ import Login from './Login/Login';
 import { AuthContext } from '../src/contexts/AuthContext';
 import Welcome from './Welcome/Welcome';
 import Verify from './Verify/Verify';
+import Basicprofile from './BasicProfile/Basicprofile';
 
 const Stack = createStackNavigator();
 
@@ -50,6 +51,11 @@ const Auth = props => {
       <Stack.Screen
         name="Verify"
         component={Verify}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Basicprofile"
+        component={Basicprofile}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

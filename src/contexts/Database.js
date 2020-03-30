@@ -55,6 +55,15 @@ const DatabaseContextProvider = props => {
         console.log(result);
       });
 
+      tx.executeSql(`
+        CREATE TABLE IF NOT EXISTS CONTACTS (
+          phone TEXT NOT NULL PRIMARY KEY
+        )
+      `, [],
+      (tx, result) => {
+        console.log(result);
+      })
+
     //   tx.executeSql(`
     //     CREATE TABLE IF NOT EXISTS FRIENDS (
     //       id TEXT NOT NULL PRIMARY KEY,

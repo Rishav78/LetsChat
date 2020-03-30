@@ -10,12 +10,23 @@ import {
 import { TextInput, FAB } from 'react-native-paper';
 import { AuthContext } from '../../src/contexts/AuthContext';
 
-const emailRegx = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+const phoneRegx = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
 
 const Login = ({ navigation }) => {
   const [prefix, setPrefix] = useState('+91');
   const [phoneno, setPhoneno] = useState('');
   const { login } = useContext(AuthContext);
+
+  const validate = async () => {
+    if(!phoneRegx.test(`+${prefix}${phoneno}`)) {
+      return Alert.alert('Error', 'invalid phone number');
+    }
+    const data = await login(`+${prefix}${phoneno}`);
+    if(!data.success) {
+      return Alert.alert('Error', data.err);
+    }
+    navigation.navigate('Verify', { phoneno, prefix });
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -33,6 +44,7 @@ const Login = ({ navigation }) => {
                 value={prefix}
                 style={styles.input}
                 onChangeText={setPrefix}
+                keyboardType="number-pad"
               />
             </View>
             <View style={{ flex: 1, marginLeft: 20 }}>
@@ -41,6 +53,7 @@ const Login = ({ navigation }) => {
                 style={styles.input}
                 placeholder="phone number"
                 onChangeText={setPhoneno}
+                keyboardType="number-pad"
               />
             </View>
           </View>
@@ -48,7 +61,7 @@ const Login = ({ navigation }) => {
         <View style={styles.footer}>
           <TouchableOpacity
             style={styles.login}
-            onPress={() => navigation.navigate('Verify')}
+            onPress={validate}
             activeOpacity={0.6}>
             <Text style={{ color: '#FFF' }}>Login</Text>
           </TouchableOpacity>

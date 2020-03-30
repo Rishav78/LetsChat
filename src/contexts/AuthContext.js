@@ -16,7 +16,7 @@ const AuthContextProvider = props => {
     })
   }, []);
 
-  const login = async (email, password) => {
+  const login = async phone => {
     const res = await fetch('http://192.168.43.215:8000/graphql', {
       method: 'POST',
       headers: {
@@ -24,21 +24,17 @@ const AuthContextProvider = props => {
       },
       body: JSON.stringify({ 
         query: `
-          query {
-            login(email: "${email}", password: "${password}") {
+          mutation {
+            login(phone: "${phone}") {
               err
-              token
-              expiresIn
+              success
             }
           }
         `
       })
     });
-    const { data } = await res.json();
-    if(!data.login.err) {
-      await AsyncStorage.setItem('token', data.login.token);
-      setAuthenticated(true);
-    }
+    const {data} = await res.json();
+    // console.log(data)
     return data.login;
   }
 

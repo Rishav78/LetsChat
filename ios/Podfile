@@ -40,6 +40,8 @@ target 'LetsChat' do
 
   pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
 
+  pod 'react-native-contacts', :path => '../node_modules/react-native-contacts'
+
   target 'LetsChatTests' do
     inherit! :search_paths
     # Pods for testing

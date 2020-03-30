@@ -8,10 +8,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Main from './screens/Main';
-
 import { NavigationContainer } from '@react-navigation/native';
 import AuthContextProvider from './src/contexts/AuthContext';
 import Splash from './screens/Splash';
+import DatabaseContextProvider from './src/contexts/Database';
 
 const App = () => {
   const [currentScreen, setCurrentscreen] = useState('Splash');
@@ -24,10 +24,12 @@ const App = () => {
   return (
 
     <NavigationContainer>
+      <DatabaseContextProvider>
       <AuthContextProvider>
         <Screen />
       </AuthContextProvider>
-    </NavigationContainer>
+      </DatabaseContextProvider>
+    </NavigationContainer> 
   );
 };
 

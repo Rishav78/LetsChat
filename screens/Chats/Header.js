@@ -64,7 +64,7 @@ const ChatsAppBar = ({ value, onChange, logout }) => {
             onPress={() => { }}
             title={<Text>Settings</Text>} />
           <Menu.Item
-            onPress={logout}
+            onPress={() => logout()}
             title={<Text>Logout</Text>} />
         </Menu>
       </Appbar.Header>

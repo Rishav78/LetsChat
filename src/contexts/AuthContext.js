@@ -1,11 +1,13 @@
-import React, { useState, createContext, useEffect } from 'react';
+import React, { useState, createContext, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Alert } from 'react-native';
+import { DatabseContext } from './Database';
 
 export const AuthContext = createContext();
 
 const AuthContextProvider = props => {
   const [authenticated, setAuthenticated] = useState(false);
+  const { deleteAllData } = useContext(DatabseContext);
 
   useEffect(() => {
     AsyncStorage.getItem('status').then( res => {
@@ -41,11 +43,13 @@ const AuthContextProvider = props => {
     return data.login;
   }
 
-  const logout = () => {
+  const logout = async () => {
+    const token = await AsyncStorage.getItem('token');
     const res = await fetch('http://192.168.43.215:8000/graphql', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Barrer ${token}`
       },
       body: JSON.stringify({ 
         query: `
@@ -65,6 +69,7 @@ const AuthContextProvider = props => {
     await AsyncStorage.removeItem('status');
     await AsyncStorage.removeItem('phone');
     await AsyncStorage.removeItem('token');
+    deleteAllData();
     setAuthenticated(false);
   }
 

@@ -65,8 +65,18 @@ const DatabaseContextProvider = props => {
     () => console.log('table created'));
 
   }, []);
+
+  const deleteAllData = () => {
+    db.transaction( tx => {
+      tx.executeSql(`DELETE FROM CHATS`);
+      tx.executeSql(`DELETE FROM CONTACTS`);
+      tx.executeSql(`DELETE FROM MEMBERS`);
+      tx.executeSql(`DELETE FROM MESSAGES`);
+    }, err => console.log(err));
+  }
+
   return (
-    <DatabseContext.Provider value={{ db }}>
+    <DatabseContext.Provider value={{ db, deleteAllData }}>
         { props.children }
     </DatabseContext.Provider>
   );

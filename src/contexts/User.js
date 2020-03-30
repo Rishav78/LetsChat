@@ -5,7 +5,7 @@ export const UserContext = createContext();
 
 const UserContextProvider = ({ children }) => {
 
-  const fetchUserInfo = async id => {
+  const user = async phone => {
     const token = await AsyncStorage.getItem('token');
     if(!token) {
       return { err: 'unauthenticated'};
@@ -19,11 +19,12 @@ const UserContextProvider = ({ children }) => {
       body: JSON.stringify({
         query: `
           query {
-            user(_id: "${id}") {
-              _id
-              firstname
-              lastname
-              email
+            user(phone: "${phone}") {
+              err
+              name
+              number
+              countrycode
+              status
             }
           }
         `
@@ -34,7 +35,7 @@ const UserContextProvider = ({ children }) => {
   }
 
   return (
-    <UserContext.Provider value={{ fetchUserInfo }}>
+    <UserContext.Provider value={{ user }}>
       { children }
     </UserContext.Provider>
   );

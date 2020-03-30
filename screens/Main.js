@@ -1,6 +1,5 @@
 //@ts-check
 import React, { useContext } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import {
   Provider
@@ -15,28 +14,26 @@ const Main = props => {
   const { authenticated } = useContext(AuthContext);
   return (
     <Provider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          {!authenticated ?
-            <>
-              <Stack.Screen
-                name="Auth"
-                component={Auth}
-                options={{
-                  headerShown: false
-                }} />
-            </> :
-            <>
+      <Stack.Navigator>
+        {!authenticated ?
+          <>
+            <Stack.Screen
+              name="Auth"
+              component={Auth}
+              options={{
+                headerShown: false
+              }} />
+          </> :
+          <>
             <Stack.Screen
               name="Home"
               component={Home}
               options={{
                 headerShown: false
               }} />
-            </>
-          }
-        </Stack.Navigator>
-      </NavigationContainer>
+          </>
+        }
+      </Stack.Navigator>
     </Provider>
   );
 }

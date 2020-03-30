@@ -3,7 +3,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { v1 as uuidv4 } from 'uuid';
 import { DatabseContext } from './Database';
 import { AuthContext } from './AuthContext';
-import { cos } from 'react-native-reanimated';
 
 export const ChatsContext = createContext();
 

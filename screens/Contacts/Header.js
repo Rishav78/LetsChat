@@ -11,7 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import Searchbar from '../../src/components/SearchBar';
 
 
-const ChatsAppBar = ({ value, onChange, logout }) => {
+const ChatsAppBar = ({ value, onChange, count, refresh }) => {
   const navigation = useNavigation();
   const [search, setSearch] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -29,7 +29,8 @@ const ChatsAppBar = ({ value, onChange, logout }) => {
         onBack={hideSearchBar} /> :
       <Appbar.Header>
         <Appbar.Content
-          title="LetsChat"
+          title="Select Friend"
+          subtitle={`${count} Friends`}
         />
         <Appbar.Action
           icon="account-plus"
@@ -53,19 +54,16 @@ const ChatsAppBar = ({ value, onChange, logout }) => {
             title={<Text>New group</Text>} />
           <Menu.Item
             onPress={() => { }}
-            title={<Text>New broadcast</Text>} />
+            title={<Text>Invite a friend</Text>} />
           <Menu.Item
             onPress={() => { }}
-            title={<Text>LetsChat Web</Text>} />
+            title={<Text>Contacts</Text>} />
+          <Menu.Item
+            onPress={refresh}
+            title={<Text>Refresh</Text>} />
           <Menu.Item
             onPress={() => { }}
-            title={<Text>Starred messages</Text>} />
-          <Menu.Item
-            onPress={() => { }}
-            title={<Text>Settings</Text>} />
-          <Menu.Item
-            onPress={logout}
-            title={<Text>Logout</Text>} />
+            title={<Text>Help</Text>} />
         </Menu>
       </Appbar.Header>
   );

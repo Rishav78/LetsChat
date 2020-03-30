@@ -13,7 +13,7 @@ import Header from './Header';
 import { AuthContext } from '../../src/contexts/AuthContext';
 
 const Basicprofile = ({ navigation, route }) => {
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, setAuthenticated } = useContext(AuthContext);
   const [name, setName] = useState('');
   const [id, setId] = useState(null);
   const { phoneno, prefix } = route.params;
@@ -51,7 +51,7 @@ const Basicprofile = ({ navigation, route }) => {
     });
     const data = await res.json();
     AsyncStorage.setItem('status', 'updated');
-    // navigation.navigate('Chats');
+    setAuthenticated(true);
   }
 
   const insert = async () => {
@@ -75,8 +75,7 @@ const Basicprofile = ({ navigation, route }) => {
     });
     const data = await res.json();
     AsyncStorage.setItem('status', 'updated');
-    console.log(data)
-    // navigation.navigate('Chats');
+    setAuthenticated(true);
   }
 
   return (
@@ -85,7 +84,7 @@ const Basicprofile = ({ navigation, route }) => {
       <View style={{ flex: 1}}>
         <View style={{ alignItems: 'center' }}>
           <Image
-            style={{ width: 300, height: 300, padding: 20 }}
+            style={{ width: 150, height: 150, padding: 20 }}
             source={require('../../assets/logo.png')} />
         </View>
         <View style={{ paddingHorizontal: 20, flex: 1 }}>

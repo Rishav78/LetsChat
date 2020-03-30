@@ -12,8 +12,10 @@ import {
 import { ChatsContext } from '../../src/contexts/Chats';
 import Chat from '../../src/components/Chat';
 import Header from './Header';
+import { AuthContext } from '../../src/contexts/AuthContext';
 
 const Chats = ({ navigation }) => {
+  const { logout } = useContext(AuthContext);
   const { availableChats } = useContext(ChatsContext);
   const [search, setSeach] = useState('');
 
@@ -21,7 +23,7 @@ const Chats = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Header value={search} onChange={setSeach} />
+      <Header value={search} onChange={setSeach} logout={logout} />
       <FlatList
         style={{ flex: 1, backgroundColor: '#FFF' }}
         data={!search ? chats : chats.filter(e => new RegExp(search, 'i').test(e.chatname))}
@@ -35,7 +37,7 @@ const Chats = ({ navigation }) => {
         icon="message-text"
         color="#FFF"
         style={styles.newChat}
-        onPress={() => navigation.navigate('Friends')}
+        onPress={() => navigation.navigate('Contacts')}
       />
     </SafeAreaView>
   );

@@ -8,6 +8,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Main from './screens/Main';
+
+import { NavigationContainer } from '@react-navigation/native';
 import AuthContextProvider from './src/contexts/AuthContext';
 import Splash from './screens/Splash';
 
@@ -20,9 +22,12 @@ const App = () => {
 
   const Screen = currentScreen === 'Splash' ? Splash : Main;
   return (
-    <AuthContextProvider>
-      <Screen />
-    </AuthContextProvider>
+
+    <NavigationContainer>
+      <AuthContextProvider>
+        <Screen />
+      </AuthContextProvider>
+    </NavigationContainer>
   );
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,9 +7,27 @@ import {
   SafeAreaView
 } from 'react-native';
 import { Provider } from 'react-native-paper';
+import AsyncStorage from '@react-native-community/async-storage';
+import { AuthContext } from '../../src/contexts/AuthContext';
 
 
 const Welcome = ({ navigation }) => {
+  const { currentUser, setAuthenticated } = useContext(AuthContext);
+
+  useEffect( () => {
+    checkStatus();
+  }, []);
+
+  const checkStatus = async () => {
+    const status = await AsyncStorage.getItem('status');
+    const phone = JSON.parse(await AsyncStorage.getItem('phone'));
+    if (status === 'otp') {
+      navigation.navigate('Verify', phone);
+    }
+    else if (status === 'verified') {
+      navigation.navigate('Basicprofile', phone);
+    }
+  }
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Provider>
@@ -26,8 +44,8 @@ const Welcome = ({ navigation }) => {
                 Read our Privacy Policy. Tap "Agree and continue"
                 to accept the Terms and Services
               </Text>
-              <TouchableOpacity 
-                activeOpacity={0.6} 
+              <TouchableOpacity
+                activeOpacity={0.6}
                 style={styles.agree}
                 onPress={() => navigation.navigate('Login')}>
                 <Text style={{ color: '#FFF', fontWeight: 'bold' }}>AGREE AND CONTINUE</Text>

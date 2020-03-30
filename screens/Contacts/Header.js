@@ -1,7 +1,7 @@
 //@ts-check
 import React, { useState } from 'react';
 import {
-  Text
+  Text, StyleSheet
 } from 'react-native';
 import {
   Appbar,
@@ -28,13 +28,13 @@ const ChatsAppBar = ({ value, onChange, count, refresh }) => {
         onChange={onChange}
         onBack={hideSearchBar} /> :
       <Appbar.Header>
-        <Appbar.Content
-          title="Select Friend"
-          subtitle={`${count} Friends`}
+        <Appbar.BackAction
+          onPress={navigation.goBack}
         />
-        <Appbar.Action
-          icon="account-plus"
-          onPress={() => navigation.navigate('AddFriend')} />
+        <Appbar.Content
+          title="Select contact"
+          subtitle={`${count} Contacts`}
+        />
         <Appbar.Action
           icon="magnify"
           onPress={() => setSearch(prevState => !prevState)} />
@@ -51,22 +51,28 @@ const ChatsAppBar = ({ value, onChange, count, refresh }) => {
           }>
           <Menu.Item
             onPress={() => { }}
-            title={<Text>New group</Text>} />
+            title={<Text style={styles.options}>New group</Text>} />
           <Menu.Item
             onPress={() => { }}
-            title={<Text>Invite a friend</Text>} />
+            title={<Text style={styles.options}>Invite a friend</Text>} />
           <Menu.Item
             onPress={() => { }}
-            title={<Text>Contacts</Text>} />
+            title={<Text style={styles.options}>Contacts</Text>} />
           <Menu.Item
             onPress={refresh}
-            title={<Text>Refresh</Text>} />
+            title={<Text style={styles.options}>Refresh</Text>} />
           <Menu.Item
             onPress={() => { }}
-            title={<Text>Help</Text>} />
+            title={<Text style={styles.options}>Help</Text>} />
         </Menu>
       </Appbar.Header>
   );
 }
+
+const styles = StyleSheet.create({
+  options: {
+    letterSpacing: 1
+  }
+})
 
 export default ChatsAppBar;

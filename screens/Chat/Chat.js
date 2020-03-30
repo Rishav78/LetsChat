@@ -11,16 +11,15 @@ import { } from 'react-native-paper';
 import Header from './Header';
 import { SocketContext } from '../../src/contexts/Socket';
 import { ChatsContext } from '../../src/contexts/Chats';
-import { UserContext } from '../../src/contexts/User';
 import InputMessage from '../../src/components/InputMessage';
+import { ContactsContext } from '../../src/contexts/Contacts';
 
 const Chat = ({ route }) => {
   const { availableChats, createPersonalChat, messages } = useContext(ChatsContext);
-  const { fetchUserInfo } = useContext(UserContext);
+  const { contacts } = useContext(ContactsContext);
   const {socket} = useContext(SocketContext);
-  const [chatIndex, setChatIndex] = useState(-1);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [chat, setChat] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState([]);
 
   useEffect(() => {
@@ -33,61 +32,45 @@ const Chat = ({ route }) => {
   }, []);
 
   useEffect(_ => {
-    const { user, chat } = route.params;
-    if (user) {
-      createChat(user);
-      return () => { };
+    const { data } = route.params;
+    setChat(data);
+    if(availableChats[data.id]) {
+      
     }
-    fetchChatInfo(chat.index, chat._id);
   }, []);
 
-  const createChat = async user => {
-    for (let i = 0; i < availableChats.length; i++) {
-      if (availableChats[i].chattype === 'personal' && availableChats[i].receiver._id === user) {
-        fetchChatInfo(i, availableChats[i]._id);
-        return;
-      }
-    }
-    setUser(await fetchUserInfo(user));
-    setLoading(prevSatate => !prevSatate);
-  }
-
-  const fetchChatInfo = async (i, id) => {
-    setChatIndex(i);
-    setUser(await fetchUserInfo(availableChats[i].receiver._id));
-    setMessage(await messages(availableChats[i]._id));
-    setLoading(prevSatate => !prevSatate);
-  }
-
   const sendMessage = async message => {
-    if(chatIndex === -1) {
-       await createPersonalChat(user._id);
-       setChatIndex(0);
-    }
-    socket.emit('send-message', {
-      chat: {
-        _id: availableChats[chatIndex]._id,
-        receiver: [availableChats[chatIndex].receiver]
-      },
-      message: {
-        message,
-        messagetype: 'text'
-      }
-    },
-    message => {
-      setMessage( prevState => [ ...prevState, message ]);
-    })
+    // if(!availableChats[chat.id]) {
+    //   createPersonalChat({
+    //     ...chat,
+    //     member: contacts[chat.member.number]
+    //   });
+    // }
+    setMessage( prevState => [ ...prevState, {message} ]);
+    // socket.emit('send-message', {
+    //   chat: {
+    //     _id: availableChats[chatIndex]._id,
+    //     receiver: [availableChats[chatIndex].receiver]
+    //   },
+    //   message: {
+    //     message,
+    //     messagetype: 'text'
+    //   }
+    // },
+    // message => {
+    //   setMessage( prevState => [ ...prevState, message ]);
+    // })
   }
 
 
   return (
-    loading ?
+    !chat ?
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#0000ff" />
       </SafeAreaView> :
       <SafeAreaView style={{ flex: 1 }}>
         <Header
-          data={user}
+          data={contacts[`+${chat.member.countrycode}${chat.member.number}`]}
         />
         <View style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>

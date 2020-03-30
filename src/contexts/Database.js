@@ -19,7 +19,7 @@ const DatabaseContextProvider = props => {
 
   useEffect( () => {
     
-    db.transaction( tx => {
+    db.transaction( tx => { 
       tx.executeSql(`
         CREATE TABLE IF NOT EXISTS CHATS (
           id TEXT NOT NULL PRIMARY KEY,
@@ -34,10 +34,9 @@ const DatabaseContextProvider = props => {
       tx.executeSql(`
         CREATE TABLE IF NOT EXISTS MEMBERS (
           id TEXT NOT NULL PRIMARY KEY,
-          userid TEXT NOT NULL,
+          user TEXT NOT NULL,
           chatid TEXT NOT NULL,
-          firstname TEXT NOT NULL,
-          lastname TEXT NOT NULL
+          name TEXT NOT NULL
         )
       `, [],
       (tx, result) => console.log(result));

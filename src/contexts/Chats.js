@@ -1,14 +1,10 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import AsyncStorage from '@react-native-community/async-storage';
-import { v1 as uuidv4 } from 'uuid';
 import { DatabseContext } from './Database';
-import { AuthContext } from './AuthContext';
 
 export const ChatsContext = createContext();
 
 const ChatsContextProvider = ({ children }) => {
   const [availableChats, setAvailableChats] = useState([]);
-  const { user } = useContext(AuthContext);
   const { db } = useContext(DatabseContext);
 
   const chats = () => {
@@ -35,13 +31,12 @@ const ChatsContextProvider = ({ children }) => {
     });
   }
 
-  const createPersonalChat = member => {
-    const id = uuidv4();
+  const createPersonalChat = data => {
     db.transaction( tx => {
       tx.executeSql(`
         INSERT INTO 
         CHATS (id, chattype)
-        VALUES ("${id}", "personal")
+        VALUES ("${data.id}", "personal")
       `, [], 
       (tx, result) => {
         console.log(result);
@@ -52,10 +47,9 @@ const ChatsContextProvider = ({ children }) => {
         MEMBERS
         VALUES (
           "${uuidv4()}", 
-          "${member._id}", 
-          "${id}", 
-          "${member.firstname}",
-          "${member.lastname}"
+          "${data.member.number}", 
+          "${data.id}", 
+          "${data.member.name}"
         )
       `, [], 
       (tx, result) => {
@@ -65,6 +59,7 @@ const ChatsContextProvider = ({ children }) => {
     (err) => {
       console.log('err -> ', err);
     })
+    return { chattype: 'personal', id };
   }
 
   useEffect(() => {
@@ -173,7 +168,7 @@ const ChatsContextProvider = ({ children }) => {
   // }
 
   return (
-    <ChatsContext.Provider value={{ availableChats }}>
+    <ChatsContext.Provider value={{ availableChats, createPersonalChat }}>
       { children }
     </ChatsContext.Provider>
   );

@@ -15,7 +15,7 @@ const Header = ({ data }) => {
         onPress={navigation.goBack}
       />
       <Appbar.Content
-        title={`${data.firstname} ${data.lastname}`}
+        title={`${data.name}`}
         subtitle="online"
       />
       <Menu

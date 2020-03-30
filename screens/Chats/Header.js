@@ -32,9 +32,6 @@ const ChatsAppBar = ({ value, onChange, logout }) => {
           title="LetsChat"
         />
         <Appbar.Action
-          icon="account-plus"
-          onPress={() => navigation.navigate('AddFriend')} />
-        <Appbar.Action
           icon="magnify"
           onPress={() => setSearch(prevState => !prevState)} />
         <Menu

@@ -21,6 +21,11 @@ const ChatsAppBar = ({ value, onChange, logout }) => {
     setSearch(false);
   }
 
+  const CreateGroup = () => {
+    setVisible(false);
+    navigation.navigate('CreateGroup')
+  }
+
   return (
     search ?
       <Searchbar
@@ -46,7 +51,7 @@ const ChatsAppBar = ({ value, onChange, logout }) => {
             />
           }>
           <Menu.Item
-            onPress={() => { }}
+            onPress={CreateGroup}
             title={<Text>New group</Text>} />
           <Menu.Item
             onPress={() => { }}

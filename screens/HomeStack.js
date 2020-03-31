@@ -9,6 +9,8 @@ import UserContextProvider from '../src/contexts/User';
 import Contacts from './Contacts/Contacts';
 import ContactsContextProvider from '../src/contexts/Contacts';
 import MessageContextProvider from '../src/contexts/Message';
+import CreateGroup from './CreateGroup/CreateGroup';
+import AddSubject from './CreateGroup/AddSubject';
 
 const Stack = createStackNavigator();
 
@@ -40,6 +42,14 @@ const Home = () => {
                 <Stack.Screen
                   name="Chat"
                   component={Chat}
+                  options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="CreateGroup"
+                  component={CreateGroup}
+                  options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="AddSubject"
+                  component={AddSubject}
                   options={{ headerShown: false }} />
               </Stack.Navigator>
             </MessageContextProvider>

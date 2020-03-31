@@ -13,10 +13,9 @@ import { ChatsContext } from '../../src/contexts/Chats';
 import InputMessage from '../../src/components/InputMessage';
 import { ContactsContext } from '../../src/contexts/Contacts';
 import { MessageContext } from '../../src/contexts/Message';
-import { AuthContext } from '../../src/contexts/AuthContext';
+import Message from '../../src/components/Message';
 
 const Chat = ({ route }) => {
-  const { number } = useContext(AuthContext);
   const { availableChats, createPersonalChat, updateLastMessage } = useContext(ChatsContext);
   const { getMessages, createAndSaveMessage, insert } = useContext(MessageContext);
   const { contacts } = useContext(ContactsContext);
@@ -87,10 +86,7 @@ const Chat = ({ route }) => {
               style={{ flex: 1 }}
               data={messageArray}
               renderItem={(data) =>
-                <Text
-                  style={data.item.sender === `+${number.prefix}${number.phoneno}` ? { textAlign: 'right'} : {}}>
-                  {data.item.message}
-                </Text>
+                <Message data={data.item} />
               }
               keyExtractor={item => item.id}
             />

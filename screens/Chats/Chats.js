@@ -30,7 +30,7 @@ const Chats = ({ navigation }) => {
       <Header value={search} onChange={setSeach} logout={logout} />
       <FlatList
         style={{ flex: 1, backgroundColor: '#FFF' }}
-        data={!search ? chats : chats.filter(e => new RegExp(search, 'i').test(e.chatname))}
+        data={!search ? chats : chats.filter(e => new RegExp(search, 'i').test(e.name))}
         renderItem={(data) =>
           <Chat
             data={data.item}

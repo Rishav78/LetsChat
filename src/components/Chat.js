@@ -20,7 +20,7 @@ const Chat = ({ data, onPress }) => {
             onPress={onPress ? onPress : (() => { })}>
             <View>
               <Text style={{ fontSize: 18 }}>
-                {data.chatname}
+                {data.name}
               </Text>
             </View>
             <View>

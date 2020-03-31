@@ -8,7 +8,7 @@ export const ContactsContext = createContext();
 
 const ContactsContextProvider = ({ children }) => {
   const [contacts, setContacts] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { user } = useContext(UserContext);
   const { db } = useContext(DatabseContext);
 
@@ -20,13 +20,12 @@ const ContactsContextProvider = ({ children }) => {
         SELECT * FROM CONTACTS
     `, [], (tx, result) => {
         const data = {};
-        console.log(result.rows.length)
         for (let i = 0; i < result.rows.length; i++) {
           const contact = result.rows.item(i);
           data[`+${contact.countrycode}${contact.number}`] = contact;
         }
-        console.log(data)
         setContacts(data);
+        setLoading(false);
       });
     }, err => console.log(err));
   }

@@ -12,10 +12,10 @@ import {
 import { ChatsContext } from '../../src/contexts/Chats';
 import Chat from '../../src/components/Chat';
 import Header from './Header';
-import { AuthContext } from '../../src/contexts/AuthContext';
+import { SocketContext } from '../../src/contexts/Socket';
 
 const Chats = ({ navigation }) => {
-  const { logout } = useContext(AuthContext);
+  const { disconnectSocket: logout } = useContext(SocketContext);
   const { availableChats } = useContext(ChatsContext);
   const [search, setSeach] = useState('');
 
@@ -30,8 +30,8 @@ const Chats = ({ navigation }) => {
         renderItem={(data) =>
           <Chat
             data={data.item}
-            onPress={() => navigation.navigate('Chat', { chat: { _id: data.item._id, index: data.index } })} />}
-        keyExtractor={item => item._id} />
+            onPress={() => navigation.navigate('Chat', {data: data.item} )} />}
+        keyExtractor={item => item.id} />
       <FAB
         small
         icon="message-text"

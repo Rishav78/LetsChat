@@ -1,70 +1,80 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { DatabseContext } from './Database';
+import { ContactsContext } from './Contacts';
 
 export const ChatsContext = createContext();
 
 const ChatsContextProvider = ({ children }) => {
   const [availableChats, setAvailableChats] = useState([]);
   const { db } = useContext(DatabseContext);
+  const { contacts, loading } = useContext(ContactsContext);
 
   const chats = () => {
-    db.transaction( tx => {
-      tx.executeSql(`SELECT * FROM CHATS`, [], (tx, result) => {
+    db.transaction(tx => {
+      tx.executeSql(`SELECT * FROM CHATS`, [], async (tx, result) => {
         const data = {};
-        for(let i=0;i<result.rows.length;i++) {
+        for (let i = 0; i < result.rows.length; i++) {
           const item = result.rows.item(i);
-          tx.executeSql(`
-            SELECT * FROM 
-            MEMBERS 
-            WHERE chatid="${item.id}"`, 
-          [], 
-          (tx, result) => {
-            item.receivers = result.rows.raw();
-            data[item.id] = item;
+          console.log(item)
+          item.members = await new Promise(function(resolve, reject){
+            chatMembers(item.id, data => resolve(data));
           });
+          if(item.chattype === 'personal') {
+            const { user } = item.members[0];
+            item.name = contacts[user].name;
+          }
+          data[item.id] = item;
         }
+        console.log('sdfbgrevcds', data)
         setAvailableChats(data);
       });
     },
-    (err)  => {
-      console.log('err -> ', err);
+      (err) => {
+        console.log('err -> ', err);
+      });
+  }
+
+  const chatMembers = (chatid, cb) => {
+    db.transaction(tx => {
+      tx.executeSql(`SELECT * FROM MEMBERS WHERE chatid="${chatid}"`, [],
+        (tx, result) => cb(result.rows.raw()));
     });
   }
 
   const createPersonalChat = data => {
-    db.transaction( tx => {
+    db.transaction(tx => {
       tx.executeSql(`
         INSERT INTO 
         CHATS (id, chattype)
         VALUES ("${data.id}", "personal")
-      `, [], 
-      (tx, result) => {
-        console.log(result);
-      });
+      `, [],
+        (tx, result) => {
+          console.log(result);
+        });
 
       tx.executeSql(`
         INSERT INTO
         MEMBERS
         VALUES (
-          "${uuidv4()}", 
-          "${data.member.number}", 
-          "${data.id}", 
-          "${data.member.name}"
+          "${data.members[0].id}", 
+          "${data.members[0].user}", 
+          "${data.id}"
         )
-      `, [], 
-      (tx, result) => {
-        console.log(result);
-      })
+      `, [],
+        (tx, result) => {
+          console.log(result);
+          setAvailableChats( prevState => ({ ...prevState, [data.id]: { ...data, name: contacts[data.members[0].user].name} }));
+        })
     },
-    (err) => {
-      console.log('err -> ', err);
-    })
-    return { chattype: 'personal', id };
+      (err) => {
+        console.log('err -> ', err);
+      })
   }
 
   useEffect(() => {
-    chats();
-  }, []);
+    if(!loading)
+     chats();
+  }, [loading]);
 
   // const chats = async () => {
   //   const token = await AsyncStorage.getItem('token');
@@ -169,7 +179,7 @@ const ChatsContextProvider = ({ children }) => {
 
   return (
     <ChatsContext.Provider value={{ availableChats, createPersonalChat }}>
-      { children }
+      {children}
     </ChatsContext.Provider>
   );
 }

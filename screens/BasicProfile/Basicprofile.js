@@ -21,10 +21,9 @@ const Basicprofile = ({ navigation, route }) => {
   useEffect( () => {
 
     currentUser()
-      .then( ({err, user}) => {
+      .then( ({err, name}) => {
         if(!err) {
-          setId(user._id);
-          setName(user.name);
+          setName(name);
         }
       })
     

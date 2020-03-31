@@ -11,23 +11,30 @@ import { v4 as uuidv4 } from 'uuid';
 import { ContactsContext } from '../../src/contexts/Contacts';
 import Header from './Header';
 import User from '../../src/components/User';
+import { ChatsContext } from '../../src/contexts/Chats';
 
 const Contacts = ({ navigation }) => {
   const [search, setSearch] = useState('');
+  const { availableChats } = useContext(ChatsContext);
   const { contacts, loading, refresh } = useContext(ContactsContext);
   const contactArray = Object.values(contacts).sort((a, b) => a.name > b.name);
+  const chats = Object.values(availableChats);
 
   const startChat = (index) => {
-    console.log(contactArray[index])
-    const data = {
-      id: uuidv4(),
-      chattype: 'personal',
-      member: {
-        number: contactArray[index].number,
-        countrycode: contactArray[index].countrycode
+    const user = `+${contactArray[index].countrycode}${contactArray[index].number}`;
+    for(let i=0; i<chats.length; i++) {
+      if(chats[i].chattype === 'personal' && chats[i].members[0].user === user) {
+        return navigation.navigate('Chat', { data : chats[i]});
       }
     }
-    navigation.navigate('Chat', { data });
+    navigation.navigate('Chat', { data: {
+      id: uuidv4(),
+      chattype: 'personal',
+      members: [{
+        id: uuidv4(),
+        user
+      }]
+    }});
   }
 
   return (

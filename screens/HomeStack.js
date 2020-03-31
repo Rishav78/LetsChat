@@ -8,39 +8,41 @@ import Chat from './Chat/Chat';
 import UserContextProvider from '../src/contexts/User';
 import Contacts from './Contacts/Contacts';
 import ContactsContextProvider from '../src/contexts/Contacts';
+import MessageContextProvider from '../src/contexts/Message';
 
 const Stack = createStackNavigator();
 
 const Home = () => {
   return (
-
     <SocketContextProvider>
       <UserContextProvider>
         <ContactsContextProvider>
           <ChatsContextProvider>
-            <Stack.Navigator>
-              <Stack.Screen
-                name="Chats"
-                component={Chats}
-                options={{
-                  title: "LetsChat",
-                  headerShown: false
-                }}
-              />
-              <Stack.Screen
-                name="Contacts"
-                component={Contacts}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="AddFriend"
-                component={AddFriend}
-                options={{ headerShown: false }} />
-              <Stack.Screen
-                name="Chat"
-                component={Chat}
-                options={{ headerShown: false }} />
-            </Stack.Navigator>
+            <MessageContextProvider>
+              <Stack.Navigator>
+                <Stack.Screen
+                  name="Chats"
+                  component={Chats}
+                  options={{
+                    title: "LetsChat",
+                    headerShown: false
+                  }}
+                />
+                <Stack.Screen
+                  name="Contacts"
+                  component={Contacts}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="AddFriend"
+                  component={AddFriend}
+                  options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="Chat"
+                  component={Chat}
+                  options={{ headerShown: false }} />
+              </Stack.Navigator>
+            </MessageContextProvider>
           </ChatsContextProvider>
         </ContactsContextProvider>
       </UserContextProvider>

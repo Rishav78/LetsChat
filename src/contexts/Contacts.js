@@ -56,7 +56,6 @@ const ContactsContextProvider = ({ children }) => {
               if (contacts[number]) continue;
               const { err, ...info } = await user(number);
               if (!err && !contacts[`+${info.countrycode}${info.number}`]) {
-                console.log(info);
                 insert(info);
                 data[`+${info.countrycode}${info.number}`] = { ...info, label };
               }
@@ -72,11 +71,15 @@ const ContactsContextProvider = ({ children }) => {
   const insert = ({ name, number, countrycode, status }) => {
     db.transaction(tx => {
       tx.executeSql(`
-        INSERT INTO CONTACTS VALUES (
+        INSERT INTO 
+        CONTACTS
+        VALUES (
           "${number}",
           "${countrycode}",
           "${name}",
-          "${status}"
+          "${status}",
+          "${Date()}",
+          "${Date()}"
         )
     `, [], (tx, result) => console.log(result));
     }, err => console.log(err));

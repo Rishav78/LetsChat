@@ -5,27 +5,27 @@ import { AuthContext } from './AuthContext';
 
 export const SocketContext = createContext();
 
-// const socket = SocketIO('http://192.168.43.215:8000');
-
 const SocketContextProvider = props => {
   const [socket, setSocket] = useState(null);
+  const [connected, setConnected] = useState(false);
   const { logout } = useContext(AuthContext);
 
   useEffect(() => {
-    console.log('connect socket call');
-    ConnectSocket();
-  }, []);
-
-  const ConnectSocket = async () => {
     const io = SocketIO('http://192.168.43.215:8000');
-    const token = await AsyncStorage.getItem('token');
-    io.emit('authentication', { token });
-    io.on('unauthorized', function (err) {
-      console.log("There was an error with the authentication:", err.message);
+    AsyncStorage.getItem('token')
+      .then(token => {
+        io.emit('authentication', { token });
+        io.on('unauthorized', function (err) {
+          console.log("There was an error with the authentication:", err.message);
+        });
+        setConnected(true);
+        setSocket(io);
+      })
+    return () => {
       io.removeAllListeners('unauthorized');
-    });
-    setSocket(io);
-  }
+      io.disconnect();
+    }
+  }, []);
 
   const disconnectSocket = () => {
     socket.disconnect();
@@ -33,7 +33,7 @@ const SocketContextProvider = props => {
   }
 
   return (
-    <SocketContext.Provider value={{ socket, disconnectSocket }}>
+    <SocketContext.Provider value={{ socket, disconnectSocket, connected }}>
       {props.children}
     </SocketContext.Provider>
   );

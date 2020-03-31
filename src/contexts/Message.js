@@ -8,12 +8,16 @@ export const MessageContext = createContext();
 
 const MessageContextProvider = ({ children }) => {
   const { db } = useContext(DatabseContext);
-
   const createAndSaveMessage = async (message, chatid) => {
     const {phoneno, prefix} = JSON.parse(await AsyncStorage.getItem('phone'));
     const sender = `+${prefix}${phoneno}`;
     const data = {
-      id: uuidv4(), chatid, message, sender
+      id: uuidv4(), 
+      chatid, 
+      message, 
+      sender,
+      createdAt: Date(),
+      updatedAt: Date()
     };
     insert(data);
     return data;
@@ -38,8 +42,16 @@ const MessageContextProvider = ({ children }) => {
   const insert = data => {
     db.transaction( tx => { 
       tx.executeSql(`
-        INSERT INTO MESSAGES
-        VALUES ("${data.id}", "${data.chatid}", "${data.sender}", "${data.message}")
+        INSERT INTO 
+        MESSAGES
+        VALUES (
+          "${data.id}", 
+          "${data.chatid}", 
+          "${data.sender}", 
+          "${data.message}",
+          "${data.createdAt}",
+          "${data.updatedAt}"
+        )
       `, [], err => console.log(err));
     }, err => console.log(err));
   }

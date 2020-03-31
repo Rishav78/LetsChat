@@ -19,7 +19,11 @@ const Chats = ({ navigation }) => {
   const { availableChats } = useContext(ChatsContext);
   const [search, setSeach] = useState('');
 
-  const chats = Object.values(availableChats);
+  const chats = Object.values(availableChats).sort((a, b) => {
+    const dateA = new Date(a.lastmessage ? a.lastmessage.createdAt: a.createdAt);
+    const dateB = new Date(b.lastmessage ? b.lastmessage.createdAt : b.createdAt);
+    return dateB - dateA;
+  });
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

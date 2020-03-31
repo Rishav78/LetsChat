@@ -25,7 +25,8 @@ const Chat = ({ data, onPress }) => {
             </View>
             <View>
               <Text>
-                lastmesage
+                { data.lastmessage ? data.lastmessage.message : 
+                  'Message to this chat and calls are now secured with end-to-end encryption. Tap for more info.'}
               </Text>
             </View>
           </TouchableOpacity>

@@ -35,7 +35,9 @@ const DatabaseContextProvider = props => {
         CREATE TABLE IF NOT EXISTS MEMBERS (
           id TEXT NOT NULL PRIMARY KEY,
           user TEXT NOT NULL,
-          chatid TEXT NOT NULL
+          chatid TEXT NOT NULL,
+          createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
         )
       `, [],
       (tx, result) => console.log(result));
@@ -45,7 +47,9 @@ const DatabaseContextProvider = props => {
           id TEXT NOT NULL PRIMARY KEY,
           chatid TEXT NOT NULL,
           sender TEXT NOT NULL,
-          message TEXT NOT NULL
+          message TEXT NOT NULL,
+          createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
         )
       `, [],
       (tx, result) => console.log(result));
@@ -55,7 +59,9 @@ const DatabaseContextProvider = props => {
           number TEXT NOT NULL PRIMARY KEY,
           countrycode TEXT NOT NULL,
           name TEXT NOT NULL,
-          status TEXT NOT NULL
+          status TEXT NOT NULL,
+          createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
         )
       `, [],
       (tx, result) => console.log(result));

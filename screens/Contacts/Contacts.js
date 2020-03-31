@@ -22,19 +22,25 @@ const Contacts = ({ navigation }) => {
 
   const startChat = (index) => {
     const user = `+${contactArray[index].countrycode}${contactArray[index].number}`;
-    for(let i=0; i<chats.length; i++) {
-      if(chats[i].chattype === 'personal' && chats[i].members[0].user === user) {
-        return navigation.navigate('Chat', { data : chats[i]});
+    for (let i = 0; i < chats.length; i++) {
+      if (chats[i].chattype === 'personal' && chats[i].members[0].user === user) {
+        return navigation.navigate('Chat', { data: chats[i] });
       }
     }
-    navigation.navigate('Chat', { data: {
-      id: uuidv4(),
-      chattype: 'personal',
-      members: [{
-        id: uuidv4(),
-        user
-      }]
-    }});
+    navigation.navigate('Chat', {
+      data: {
+        id: user,
+        chattype: 'personal',
+        createdAt: Date(),
+        updatedAt: Date(),
+        members: [{
+          id: uuidv4(),
+          user,
+          createdAt: Date(),
+          updatedAt: Date(),
+        }]
+      }
+    });
   }
 
   return (
@@ -54,7 +60,7 @@ const Contacts = ({ navigation }) => {
             renderItem={(data) =>
               <User
                 data={data.item}
-                onPress={() => startChat(data.index)} 
+                onPress={() => startChat(data.index)}
               />}
             keyExtractor={(data) => data.number}
           />

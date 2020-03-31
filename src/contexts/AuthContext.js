@@ -7,19 +7,19 @@ export const AuthContext = createContext();
 
 const AuthContextProvider = props => {
   const [authenticated, setAuthenticated] = useState(false);
+  const [number, setNumber] = useState('');
   const { deleteAllData } = useContext(DatabseContext);
 
-  useEffect(() => {
-    AsyncStorage.getItem('status').then( res => {
-      if(res === 'updated') {
-        currentUser().then(({ err, user }) => {
-          if (!err) {
-            setAuthenticated(true);
-          }
-        })
-      }
-    })
-  }, []);
+  const logedin = async () => {
+    const number = await AsyncStorage.getItem('phone');
+    if(!number) return;
+    const status = await AsyncStorage.getItem('status');
+    if(status !== 'updated') return;
+    setNumber(JSON.parse(number));
+    setAuthenticated(true);
+  }
+
+  useEffect(() => {logedin()}, []);
 
   const login = async phone => {
     const res = await fetch('http://192.168.43.215:8000/graphql', {
@@ -39,7 +39,6 @@ const AuthContextProvider = props => {
       })
     });
     const {data} = await res.json();
-    console.log(data)
     return data.login;
   }
 
@@ -102,7 +101,7 @@ const AuthContextProvider = props => {
   }
 
   return (
-    <AuthContext.Provider value={{ login, authenticated, currentUser, setAuthenticated, logout }}>
+    <AuthContext.Provider value={{ login, authenticated, currentUser, setAuthenticated, logout, number }}>
       { props.children }
     </AuthContext.Provider>
   );

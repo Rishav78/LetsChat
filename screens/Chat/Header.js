@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   Appbar,
   Menu
 } from 'react-native-paper';
 import { Text} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { ContactsContext } from '../../src/contexts/Contacts';
 
 const Header = ({ data }) => {
+  const { contacts } = useContext(ContactsContext);
   const [visible, setVisible] = useState(false);
+  const key = `+${data.countrycode}${data.number}`;
+  const name = contacts[key] ? contacts[key].name : key;
   const navigation = useNavigation();
   return (
     <Appbar.Header>
@@ -15,7 +19,7 @@ const Header = ({ data }) => {
         onPress={navigation.goBack}
       />
       <Appbar.Content
-        title={`${data.name}`}
+        title={`${name}`}
         subtitle="online"
       />
       <Appbar.Action

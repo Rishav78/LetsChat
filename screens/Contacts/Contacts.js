@@ -23,7 +23,8 @@ const Contacts = ({ navigation }) => {
   const startChat = (index) => {
     const user = `+${contactArray[index].countrycode}${contactArray[index].number}`;
     for (let i = 0; i < chats.length; i++) {
-      if (chats[i].chattype === 'personal' && chats[i].members[0].user === user) {
+      const number = `+${chats[i].members[0].countrycode}${chats[i].members[0].number}`;
+      if (chats[i].chattype === 'personal' && number === user) {
         return navigation.navigate('Chat', { data: chats[i] });
       }
     }
@@ -35,7 +36,8 @@ const Contacts = ({ navigation }) => {
         updatedAt: Date(),
         members: [{
           id: uuidv4(),
-          user,
+          number: contactArray[index].number,
+          countrycode: contactArray[index].countrycode,
           createdAt: Date(),
           updatedAt: Date(),
         }]

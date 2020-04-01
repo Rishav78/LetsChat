@@ -16,7 +16,6 @@ const Basicprofile = ({ navigation, route }) => {
   const { currentUser, setAuthenticated } = useContext(AuthContext);
   const [name, setName] = useState('');
   const [id, setId] = useState(null);
-  const { phoneno, prefix } = route.params;
 
   useEffect( () => {
 
@@ -24,6 +23,7 @@ const Basicprofile = ({ navigation, route }) => {
       .then( ({err, name}) => {
         if(!err) {
           setName(name);
+          setId(true);
         }
       })
     
@@ -31,7 +31,7 @@ const Basicprofile = ({ navigation, route }) => {
 
   const updateInfo = async () => {
     const token = await AsyncStorage.getItem('token');
-    const res = await fetch('http://192.168.43.215:8000/graphql', {
+    await fetch('http://192.168.43.215:8000/graphql', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -48,8 +48,8 @@ const Basicprofile = ({ navigation, route }) => {
         `
       })
     });
-    const data = await res.json();
     AsyncStorage.setItem('status', 'updated');
+    AsyncStorage.setItem('username', name);
     setAuthenticated(true);
   }
 

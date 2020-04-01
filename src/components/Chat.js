@@ -20,11 +20,11 @@ const Chat = ({ data, onPress }) => {
             onPress={onPress ? onPress : (() => { })}>
             <View>
               <Text style={{ fontSize: 18 }}>
-                {data.name}
+                { data.chattype === 'personal' ? data.name : data.group.name}
               </Text>
             </View>
             <View>
-              <Text>
+              <Text numberOfLines={1}>
                 { data.lastmessage ? data.lastmessage.message : 
                   'Message to this chat and calls are now secured with end-to-end encryption. Tap for more info.'}
               </Text>

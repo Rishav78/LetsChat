@@ -32,7 +32,8 @@ const DatabaseContextProvider = props => {
       tx.executeSql(`
         CREATE TABLE IF NOT EXISTS MEMBERS (
           id TEXT NOT NULL PRIMARY KEY,
-          user TEXT NOT NULL,
+          number TEXT NOT NULL,
+          countrycode TEXT NOT NULL,
           chatid TEXT NOT NULL,
           createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
           updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -67,7 +68,6 @@ const DatabaseContextProvider = props => {
       tx.executeSql(`
         CREATE TABLE IF NOT EXISTS GROUPS (
           id TEXT NOT NULL PRIMARY KEY,
-          owner TEXT NOT NULL,
           name TEXT NOT NULL,
           image TEXT
         )

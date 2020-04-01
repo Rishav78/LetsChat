@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import 'react-native-get-random-values';
 import {
   View,
   SafeAreaView,
@@ -6,15 +7,31 @@ import {
   StyleSheet,
   Image,
   TextInput,
-  Text
+  Text,
+  ToastAndroid
 } from 'react-native';
 import { FAB } from 'react-native-paper';
 import Header from './Header';
 import Select from '../../src/components/Select';
+import { ChatsContext } from '../../src/contexts/Chats';
 
 const AddSubject = ({ route, navigation }) => {
   const [name, setName] = useState('');
+  const { createAndSaveGroupChat } = useContext(ChatsContext);
   const { selected } = route.params;
+
+  const createGroup = async () => {
+    if(!name) {
+      return ToastAndroid.showWithGravity(
+        'Provide a group subject and optional group icon',
+        ToastAndroid.CENTER,
+        ToastAndroid.SHORT
+      );
+    }
+    createAndSaveGroupChat(selected, name);
+    navigation.navigate('Group');
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Header subject={true} />
@@ -30,6 +47,7 @@ const AddSubject = ({ route, navigation }) => {
             <TextInput
               style={styles.input}
               value={name}
+              maxLength={25}
               onChangeText={text => (text.length <= 25 && setName(text))}
               placeholder="Type group subject here..."
             />
@@ -45,7 +63,7 @@ const AddSubject = ({ route, navigation }) => {
           icon="arrow-right"
           color="#FFF"
           style={styles.next}
-          onPress={() => navigation.navigate('Group')}
+          onPress={createGroup}
         />
       </View>
       <View style={{ padding: 10, flex: 1 }}>

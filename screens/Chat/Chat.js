@@ -27,7 +27,8 @@ const Chat = ({ route }) => {
   const messageArray = Object.values(message);
 
   const receiveMessage = data => {
-    if (data.chat.chattype !== 'personal' || chat.members[0].user !== data.message.sender) {
+    const number = `+${chat.members[0].countrycode}${chat.members[0].number}`;
+    if (data.chat.chattype !== 'personal' || number !== data.message.sender) {
       return;
     }
     insert(data.message);
@@ -43,6 +44,7 @@ const Chat = ({ route }) => {
 
   useEffect(_ => {
     const { data } = route.params;
+    // console.log(data);
     getMessages(data.id, result => setMessage(result));
     setChat(data);
   }, []);
@@ -61,7 +63,7 @@ const Chat = ({ route }) => {
     setMessage(prevState => ({ ...prevState, [messageObject.id]: messageObject }));
     socket.emit('send-message', {
       chat: {
-        receiver: chat.members.map(e => e.user),
+        members: chat.members.map(e => ({ number: e.number, countrycode: e.countrycode })),
         chattype: chat.chattype
       },
       message: messageObject
@@ -78,7 +80,7 @@ const Chat = ({ route }) => {
       </SafeAreaView> :
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
         <Header
-          data={contacts[chat.members[0].user]}
+          data={chat.members[0]}
         />
         <View style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>

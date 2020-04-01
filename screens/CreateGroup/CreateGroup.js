@@ -3,7 +3,8 @@ import {
   View,
   SafeAreaView,
   FlatList,
-  StyleSheet
+  StyleSheet,
+  ToastAndroid
 } from 'react-native';
 import { FAB } from 'react-native-paper';
 import Header from './Header';
@@ -17,7 +18,18 @@ const CreateGroup = ({ navigation }) => {
   const { contacts } = useContext(ContactsContext);
   const [contactsArray, setContactsArray] = useState(Object.values(contacts));
 
-  const sortedContacts = contactsArray.sort((a, b) => (a.name > b.name))
+  const sortedContacts = contactsArray.sort((a, b) => (a.name > b.name));
+
+  const moveToAddSubject = () => {
+    if(selectedContacts.length === 0) {
+      return ToastAndroid.showWithGravity(
+        'At least 1 contact must be selected',
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    }
+    navigation.navigate('AddSubject', { selected: selectedContacts });
+  }
 
   const markSelected = index => {
     setSelectedContacts(prevState => [...prevState, contactsArray[index]]);
@@ -33,10 +45,10 @@ const CreateGroup = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
       <View>
         <Header
-          select={0}
+          select={selectedContacts.length}
           value={search}
           onChange={setSearch}
-          total={contactsArray.length}
+          total={Object.keys(contacts).length}
         />
       </View>
       <View style={{ flex: 1 }}>
@@ -81,7 +93,7 @@ const CreateGroup = ({ navigation }) => {
           icon="arrow-right"
           color="#FFF"
           style={styles.next}
-          onPress={() => navigation.navigate('AddSubject', { selected: selectedContacts })}
+          onPress={moveToAddSubject}
         />
       </View>
     </SafeAreaView>

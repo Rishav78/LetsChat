@@ -4,24 +4,21 @@ import {
   ActivityIndicator,
   View,
   FlatList,
-  Alert,
-  Text
+  Alert
 } from 'react-native';
+import NetInfo from "@react-native-community/netinfo";
 import Header from './Header';
 import { SocketContext } from '../../src/contexts/Socket';
 import { ChatsContext } from '../../src/contexts/Chats';
 import InputMessage from '../../src/components/InputMessage';
-import { ContactsContext } from '../../src/contexts/Contacts';
 import { MessageContext } from '../../src/contexts/Message';
 import Message from '../../src/components/Message';
 
 const Chat = ({ route }) => {
   const { availableChats, createPersonalChat, updateLastMessage } = useContext(ChatsContext);
   const { getMessages, createAndSaveMessage, insert } = useContext(MessageContext);
-  const { contacts } = useContext(ContactsContext);
   const { socket } = useContext(SocketContext);
   const [chat, setChat] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({});
 
   const messageArray = Object.values(message);
@@ -44,13 +41,18 @@ const Chat = ({ route }) => {
 
   useEffect(_ => {
     const { data } = route.params;
-    // console.log(data);
     getMessages(data.id, result => setMessage(result));
     setChat(data);
   }, []);
 
   const sendMessage = async message => {
     if (!message) return;
+    const state = await NetInfo.fetch();
+    if(!state.isConnected) {
+      return Alert.alert(
+        'Network error', 
+        'Check your internet connection and try again');
+    }
     const messageObject = await createAndSaveMessage(message, chat.id);
     if (!availableChats[chat.id]) {
       createPersonalChat(chat, () => {

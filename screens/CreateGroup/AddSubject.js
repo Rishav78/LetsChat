@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import 'react-native-get-random-values';
 import {
   View,
   SafeAreaView,
@@ -8,15 +7,19 @@ import {
   Image,
   TextInput,
   Text,
-  ToastAndroid
+  ToastAndroid,
+  Alert
 } from 'react-native';
+import NetInfo from "@react-native-community/netinfo";
 import { FAB } from 'react-native-paper';
 import Header from './Header';
 import Select from '../../src/components/Select';
 import { ChatsContext } from '../../src/contexts/Chats';
+import { SocketContext } from '../../src/contexts/Socket';
 
 const AddSubject = ({ route, navigation }) => {
   const [name, setName] = useState('');
+  const { socket } = useContext(SocketContext);
   const { createAndSaveGroupChat } = useContext(ChatsContext);
   const { selected } = route.params;
 
@@ -28,8 +31,20 @@ const AddSubject = ({ route, navigation }) => {
         ToastAndroid.SHORT
       );
     }
-    createAndSaveGroupChat(selected, name);
-    navigation.navigate('Group');
+    const state = await NetInfo.fetch();
+    if(!state.isConnected) {
+      return Alert.alert(
+        'Network error', 
+        'Check your internet connection and try again');
+    }
+    createAndSaveGroupChat(selected, name, data => {
+      socket.emit('create-new-group', data, (err) => {
+        if(err) {
+          return Alert.alert('Error', err.message);
+        }
+        navigation.navigate('Group');
+      })
+    });
   }
 
   return (

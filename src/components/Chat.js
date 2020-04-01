@@ -16,7 +16,7 @@ const Chat = ({ data, onPress }) => {
         </View>
         <View style={{ flex: 1, borderBottomWidth: 1, borderBottomColor: '#f2f2f2' }}>
           <TouchableOpacity
-            style={{ flex: 1, justifyContent: 'center' }}
+            style={{ flex: 1, justifyContent: 'center', paddingRight: 20 }}
             onPress={onPress ? onPress : (() => { })}>
             <View>
               <Text style={{ fontSize: 18 }}>

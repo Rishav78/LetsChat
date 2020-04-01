@@ -47,7 +47,12 @@ const ChatsContextProvider = ({ children }) => {
       chattype: 'group',
       createdAt: Date().toString(),
       updatedAt: Date().toString(),
-      members: selected.map( e => ({ ...e, id: uuidv4() })),
+      members: selected.map( e => ({ 
+        number: e.number,
+        countrycode: e.countrycode,
+        name: e.name,
+        id: uuidv4() 
+      })),
       group: {
         id,
         name,

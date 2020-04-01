@@ -24,8 +24,6 @@ const DatabaseContextProvider = props => {
         CREATE TABLE IF NOT EXISTS CHATS (
           id TEXT NOT NULL PRIMARY KEY,
           chattype TEXT NOT NULL,
-          chatname TEXT,
-          imageid TEXT,
           createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
           updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
         )
@@ -62,6 +60,16 @@ const DatabaseContextProvider = props => {
           status TEXT NOT NULL,
           createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
           updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `, [],
+      (tx, result) => console.log(result));
+
+      tx.executeSql(`
+        CREATE TABLE IF NOT EXISTS GROUPS (
+          id TEXT NOT NULL PRIMARY KEY,
+          owner TEXT NOT NULL,
+          name TEXT NOT NULL,
+          image TEXT
         )
       `, [],
       (tx, result) => console.log(result));

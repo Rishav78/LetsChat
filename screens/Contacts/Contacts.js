@@ -18,7 +18,7 @@ const Contacts = ({ navigation }) => {
   const { availableChats } = useContext(ChatsContext);
   const { contacts, loading, refresh } = useContext(ContactsContext);
   const contactArray = Object.values(contacts).sort((a, b) => a.name > b.name);
-  const chats = Object.values(availableChats);
+  const chats = Object.values(availableChats ? availableChats : {});
 
   const startChat = (index) => {
     const user = `+${contactArray[index].countrycode}${contactArray[index].number}`;

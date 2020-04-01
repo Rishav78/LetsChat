@@ -27,7 +27,10 @@ const ContactsContextProvider = ({ children }) => {
         setContacts(data);
         setLoading(false);
       });
-    }, err => console.log(err));
+    }, err => {
+      setLoading(false);
+      console.log(err);
+    });
   }
 
   const refresh = () => {

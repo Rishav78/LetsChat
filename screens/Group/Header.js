@@ -3,7 +3,7 @@ import {
   Appbar,
   Menu
 } from 'react-native-paper';
-import { Text} from 'react-native';
+import { Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const Header = ({ data }) => {
@@ -15,11 +15,10 @@ const Header = ({ data }) => {
         onPress={navigation.goBack}
       />
       <Appbar.Content
-        title={`${data.name}`}
-        subtitle="online"
+        title={`Maa Bap or Beta`}
       />
       <Appbar.Action
-        icon="phone" />
+        icon="phone-plus" />
       <Menu
         visible={visible}
         onDismiss={() => setVisible(false)}
@@ -33,19 +32,22 @@ const Header = ({ data }) => {
         }>
         <Menu.Item
           onPress={() => { }}
-          title={<Text>New group</Text>} />
+          title={<Text>Group info</Text>} />
         <Menu.Item
           onPress={() => { }}
-          title={<Text>New broadcast</Text>} />
+          title={<Text>Group Media</Text>} />
         <Menu.Item
           onPress={() => { }}
-          title={<Text>LetsChat Web</Text>} />
+          title={<Text>Search</Text>} />
         <Menu.Item
           onPress={() => { }}
-          title={<Text>Starred messages</Text>} />
+          title={<Text>Mute notifications</Text>} />
         <Menu.Item
           onPress={() => { }}
-          title={<Text>Settings</Text>} />
+          title={<Text>Wallpaper</Text>} />
+        <Menu.Item
+          onPress={() => { }}
+          title={<Text>More</Text>} />
       </Menu>
     </Appbar.Header>
   );

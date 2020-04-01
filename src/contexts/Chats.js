@@ -6,7 +6,7 @@ import { SocketContext } from './Socket';
 export const ChatsContext = createContext();
 
 const ChatsContextProvider = ({ children }) => {
-  const [availableChats, setAvailableChats] = useState([]);
+  const [availableChats, setAvailableChats] = useState({});
   const { db } = useContext(DatabseContext);
   const { socket, connected } = useContext(SocketContext);
   const { contacts, loading } = useContext(ContactsContext);

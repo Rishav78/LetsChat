@@ -12,7 +12,7 @@ import { FAB } from 'react-native-paper';
 import Header from './Header';
 import Select from '../../src/components/Select';
 
-const AddSubject = ({ route }) => {
+const AddSubject = ({ route, navigation }) => {
   const [name, setName] = useState('');
   const { selected } = route.params;
   return (
@@ -45,7 +45,7 @@ const AddSubject = ({ route }) => {
           icon="arrow-right"
           color="#FFF"
           style={styles.next}
-          onPress={() => {}}
+          onPress={() => navigation.navigate('Group')}
         />
       </View>
       <View style={{ padding: 10, flex: 1 }}>
@@ -83,10 +83,9 @@ const styles = StyleSheet.create({
   next: {
     backgroundColor: '#2ab9a4',
     position: 'absolute',
-    bottom: -50,
-    right: -20,
+    bottom: -30,
+    right: 10,
     padding: 10,
-    margin: 25,
     color: '#FFF'
   }
 })

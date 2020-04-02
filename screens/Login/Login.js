@@ -14,21 +14,21 @@ import { AuthContext } from '../../src/contexts/AuthContext';
 const phoneRegx = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
 
 const Login = ({ navigation }) => {
-  const [countrycode, setCountryCode] = useState('91');
+  const [counterycode, setCounteryCode] = useState('91');
   const [number, setNumber] = useState('');
   const { login } = useContext(AuthContext);
 
   const validate = async () => {
-    if(!phoneRegx.test(`+${countrycode}${number}`)) {
+    if(!phoneRegx.test(`+${counterycode}${number}`)) {
       return Alert.alert('Error', 'invalid phone number');
     }
-    const data = await login(`+${countrycode}${number}`);
+    const data = await login(`+${counterycode}${number}`);
     if(!data.success) {
       return Alert.alert('Error', data.err);
     }
     AsyncStorage.setItem('status', 'otp');
-    AsyncStorage.setItem('phone', JSON.stringify({ countrycode, number }));
-    navigation.navigate('Verify', { number, countrycode });
+    AsyncStorage.setItem('phone', JSON.stringify({ counterycode, number }));
+    navigation.navigate('Verify', { number, counterycode });
   }
 
   return (
@@ -44,9 +44,9 @@ const Login = ({ navigation }) => {
           <View style={{ flexDirection: 'row' }}>
             <View style={{ width: 50 }}>
               <TextInput
-                value={countrycode}
+                value={counterycode}
                 style={styles.input}
-                onChangeText={setCountryCode}
+                onChangeText={setCounteryCode}
                 keyboardType="number-pad"
               />
             </View>

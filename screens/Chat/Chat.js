@@ -38,9 +38,12 @@ const Chat = ({ route }) => {
   }, [chat]);
 
   useEffect(_ => {
-    const { data } = route.params;
-    getMessages(data.id, result => setMessage(result));
-    setChat(data);
+    if(route.params.id) {
+      setChat(availableChats[route.params.id]);
+      getMessages(data.id, result => setMessage(result));
+      return;
+    }
+    setChat(route.params.data);
   }, []);
 
   const sendMessage = async message => {
@@ -51,7 +54,7 @@ const Chat = ({ route }) => {
         'Network error', 
         'Check your internet connection and try again');
     }
-    const messageObject = await createAndSaveMessage(message, chat.id);
+    const messageObject = await createAndSaveMessage(message, chat);
     if (!availableChats[chat.id]) {
       createPersonalChat(chat, () => {
         updateLastMessage(chat.id, messageObject);
@@ -63,10 +66,7 @@ const Chat = ({ route }) => {
     setMessage(prevState => ({ ...prevState, [messageObject.id]: messageObject }));
     socket.emit('send-message', {
       chat: {
-        members: chat.members.map(e => ({
-           number: e.number, 
-           countrycode: e.countrycode 
-        })),
+        members: chat.members,
         chattype: chat.chattype
       },
       message: messageObject

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
   SafeAreaView,
@@ -7,7 +7,8 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
+  BackHandler
 } from 'react-native';
 
 import {
@@ -18,7 +19,26 @@ import Header from './Header';
 
 const Verify = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
-  const { number, countrycode } = route.params;
+  const [number, setNumber] = useState('');
+  const [counterycode, setCounteryCode] = useState('');
+
+  useState(() => {
+    BackHandler.addEventListener('hardwareBackPress', () => true);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', () => true);
+    }
+  }, []);
+
+  useEffect(() => {
+
+    AsyncStorage.getItem('phone')
+      .then(number => JSON.parse(number))
+      .then(({ number, counterycode }) => {
+        setNumber(number);
+        setCounteryCode(counterycode);
+      })
+
+  }, []);
 
   const onChangeOtp = async otp => {
     if (otp.length === 6) {
@@ -31,7 +51,7 @@ const Verify = ({ route, navigation }) => {
         body: JSON.stringify({
           query: `
             mutation {
-              verifyUser(otp: "${otp}", phone: "+${countrycode}${number}") {
+              verifyUser(otp: "${otp}", phone: "+${counterycode}${number}") {
                 err
                 token
                 expiresIn
@@ -41,13 +61,13 @@ const Verify = ({ route, navigation }) => {
         })
       });
       const { data } = await res.json();
-      if(data.verifyUser.err) {
+      if (data.verifyUser.err) {
         setLoading(false);
         return Alert.alert('Error', data.verifyUser.err);
       }
       AsyncStorage.setItem('status', 'verified');
       AsyncStorage.setItem('token', data.verifyUser.token);
-      navigation.navigate('Basicprofile', { number, countrycode });
+      navigation.navigate('Basicprofile', { number, counterycode });
     }
   }
 
@@ -57,13 +77,20 @@ const Verify = ({ route, navigation }) => {
         <ActivityIndicator size="large" color="#0000ff" />
       </SafeAreaView> :
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
-        <Header phone={`+${countrycode} ${number}`} />
+        <Header phone={`+${counterycode} ${number}`} />
         <View style={{ flex: 1 }}>
-          <View style={{ marginHorizontal: 30 }}>
+          <View style={{ alignItems: 'center' }}>
             <Text style={{ textAlign: 'center', lineHeight: 25, fontSize: 15 }}>
               Waiting to automatically detect an SMS sent to
-            +{countrycode} {number}. Wrong number ?
-          </Text>
+            </Text>
+            <View style={{ flexDirection: 'row'}}>
+              <Text style={{ fontWeight: 'bold'}}>
+                +{counterycode} {number}. &nbsp;
+              </Text>
+              <TouchableOpacity onPress={navigation.goBack}>
+                <Text style={{ color: '#0080ff'}}>Wrong number ?</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <View>
             <View style={{ justifyContent: 'center', alignItems: 'center' }}>

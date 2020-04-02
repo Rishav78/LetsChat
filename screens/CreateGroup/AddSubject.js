@@ -20,7 +20,7 @@ import { SocketContext } from '../../src/contexts/Socket';
 const AddSubject = ({ route, navigation }) => {
   const [name, setName] = useState('');
   const { socket } = useContext(SocketContext);
-  const { createAndSaveGroupChat } = useContext(ChatsContext);
+  const { createAndSaveGroupChat, setAvailableChats } = useContext(ChatsContext);
   const { selected } = route.params;
 
   const createGroup = async () => {
@@ -42,7 +42,10 @@ const AddSubject = ({ route, navigation }) => {
         if(err) {
           return Alert.alert('Error', err.message);
         }
-        navigation.navigate('Group');
+        setAvailableChats( prevState => ({
+          ...prevState, [data.id]: data
+        }));
+        navigation.navigate('Chat', {id: data.id});
       })
     });
   }

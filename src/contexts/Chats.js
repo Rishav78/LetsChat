@@ -257,6 +257,7 @@ const ChatsContextProvider = ({ children }) => {
     <ChatsContext.Provider
       value={{
         availableChats,
+        setAvailableChats,
         createPersonalChat,
         createGroupChat,
         updateLastMessage,

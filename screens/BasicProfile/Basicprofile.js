@@ -6,16 +6,24 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-  Text
+  Text,
+  BackHandler
 } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import Header from './Header';
 import { AuthContext } from '../../src/contexts/AuthContext';
 
-const Basicprofile = ({ navigation, route }) => {
+const Basicprofile = () => {
   const { currentUser, setAuthenticated } = useContext(AuthContext);
   const [name, setName] = useState('');
   const [id, setId] = useState(null);
+
+  useState(() => {
+    BackHandler.addEventListener('hardwareBackPress', () => true);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', () => true);
+    }
+  }, []);
 
   useEffect( () => {
 

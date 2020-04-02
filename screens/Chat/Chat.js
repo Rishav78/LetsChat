@@ -40,7 +40,7 @@ const Chat = ({ route }) => {
   useEffect(_ => {
     if(route.params.id) {
       setChat(availableChats[route.params.id]);
-      getMessages(data.id, result => setMessage(result));
+      getMessages(route.params.id, result => setMessage(result));
       return;
     }
     setChat(route.params.data);

@@ -37,7 +37,7 @@ const Contacts = ({ navigation }) => {
         members: [{
           id: uuidv4(),
           number: contactArray[index].number,
-          counterycode: contactArray[index].countrycode,
+          countrycode: contactArray[index].countrycode,
           createdAt: Date(),
           updatedAt: Date(),
         }]

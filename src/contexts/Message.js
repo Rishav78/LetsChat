@@ -10,8 +10,8 @@ const MessageContextProvider = ({ children }) => {
   const { db } = useContext(DatabseContext);
 
   const createAndSaveMessage = async (message, chat) => {
-    const { number, counterycode } = JSON.parse(await AsyncStorage.getItem('phone'));
-    const sender = `+${counterycode}${number}`;
+    const { number, countrycode } = JSON.parse(await AsyncStorage.getItem('phone'));
+    const sender = `+${countrycode}${number}`;
     const data = { 
       id: uuidv4(),
       message: chat.members.map( e => message), 

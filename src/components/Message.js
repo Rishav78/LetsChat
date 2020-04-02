@@ -16,7 +16,7 @@ const Message = ({ data }) => {
   console.log(number);
   return (
     <View style={{ marginVertical: 8, paddingHorizontal: 10 }}>
-      <View style={{ alignItems: data.sender === `+${number.counterycode}${number.number}` ? 'flex-end' : 'flex-start' }}>
+      <View style={{ alignItems: data.sender === `+${number.countrycode}${number.number}` ? 'flex-end' : 'flex-start' }}>
       <TouchableOpacity
         style={{ padding: 8, backgroundColor: '#135349', borderRadius: 5 }}>
         <View style={{ flexDirection: 'row' }}>

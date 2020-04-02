@@ -20,7 +20,7 @@ import Header from './Header';
 const Verify = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
   const [number, setNumber] = useState('');
-  const [counterycode, setCounteryCode] = useState('');
+  const [countrycode, setcountryCode] = useState('');
 
   useState(() => {
     BackHandler.addEventListener('hardwareBackPress', () => true);
@@ -33,9 +33,9 @@ const Verify = ({ route, navigation }) => {
 
     AsyncStorage.getItem('phone')
       .then(number => JSON.parse(number))
-      .then(({ number, counterycode }) => {
+      .then(({ number, countrycode }) => {
         setNumber(number);
-        setCounteryCode(counterycode);
+        setcountryCode(countrycode);
       })
 
   }, []);
@@ -51,7 +51,7 @@ const Verify = ({ route, navigation }) => {
         body: JSON.stringify({
           query: `
             mutation {
-              verifyUser(otp: "${otp}", phone: "+${counterycode}${number}") {
+              verifyUser(otp: "${otp}", phone: "+${countrycode}${number}") {
                 err
                 token
                 expiresIn
@@ -67,7 +67,7 @@ const Verify = ({ route, navigation }) => {
       }
       AsyncStorage.setItem('status', 'verified');
       AsyncStorage.setItem('token', data.verifyUser.token);
-      navigation.navigate('Basicprofile', { number, counterycode });
+      navigation.navigate('Basicprofile', { number, countrycode });
     }
   }
 
@@ -77,7 +77,7 @@ const Verify = ({ route, navigation }) => {
         <ActivityIndicator size="large" color="#0000ff" />
       </SafeAreaView> :
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
-        <Header phone={`+${counterycode} ${number}`} />
+        <Header phone={`+${countrycode} ${number}`} />
         <View style={{ flex: 1 }}>
           <View style={{ alignItems: 'center' }}>
             <Text style={{ textAlign: 'center', lineHeight: 25, fontSize: 15 }}>
@@ -85,7 +85,7 @@ const Verify = ({ route, navigation }) => {
             </Text>
             <View style={{ flexDirection: 'row'}}>
               <Text style={{ fontWeight: 'bold'}}>
-                +{counterycode} {number}. &nbsp;
+                +{countrycode} {number}. &nbsp;
               </Text>
               <TouchableOpacity onPress={navigation.goBack}>
                 <Text style={{ color: '#0080ff'}}>Wrong number ?</Text>

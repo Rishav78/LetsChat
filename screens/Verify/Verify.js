@@ -18,7 +18,7 @@ import Header from './Header';
 
 const Verify = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
-  const { phoneno, prefix } = route.params;
+  const { number, countrycode } = route.params;
 
   const onChangeOtp = async otp => {
     if (otp.length === 6) {
@@ -31,7 +31,7 @@ const Verify = ({ route, navigation }) => {
         body: JSON.stringify({
           query: `
             mutation {
-              verifyUser(otp: "${otp}", phone: "+${prefix}${phoneno}") {
+              verifyUser(otp: "${otp}", phone: "+${countrycode}${number}") {
                 err
                 token
                 expiresIn
@@ -47,7 +47,7 @@ const Verify = ({ route, navigation }) => {
       }
       AsyncStorage.setItem('status', 'verified');
       AsyncStorage.setItem('token', data.verifyUser.token);
-      navigation.navigate('Basicprofile', { phoneno, prefix });
+      navigation.navigate('Basicprofile', { number, countrycode });
     }
   }
 
@@ -57,12 +57,12 @@ const Verify = ({ route, navigation }) => {
         <ActivityIndicator size="large" color="#0000ff" />
       </SafeAreaView> :
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
-        <Header phone={`+${prefix} ${phoneno}`} />
+        <Header phone={`+${countrycode} ${number}`} />
         <View style={{ flex: 1 }}>
           <View style={{ marginHorizontal: 30 }}>
             <Text style={{ textAlign: 'center', lineHeight: 25, fontSize: 15 }}>
               Waiting to automatically detect an SMS sent to
-            +{prefix} {phoneno}. Wrong number ?
+            +{countrycode} {number}. Wrong number ?
           </Text>
           </View>
           <View>

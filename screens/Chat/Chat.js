@@ -16,7 +16,7 @@ import Message from '../../src/components/Message';
 
 const Chat = ({ route }) => {
   const { availableChats, createPersonalChat, updateLastMessage } = useContext(ChatsContext);
-  const { getMessages, createAndSaveMessage, insert } = useContext(MessageContext);
+  const { getMessages, createAndSaveMessage } = useContext(MessageContext);
   const { socket } = useContext(SocketContext);
   const [chat, setChat] = useState(null);
   const [message, setMessage] = useState({});
@@ -24,11 +24,9 @@ const Chat = ({ route }) => {
   const messageArray = Object.values(message);
 
   const receiveMessage = data => {
-    const number = `+${chat.members[0].countrycode}${chat.members[0].number}`;
-    if (data.chat.chattype !== 'personal' || number !== data.message.sender) {
+    if (data.chat.chattype !== 'personal' || chat.id !== data.message.sender) {
       return;
     }
-    insert(data.message);
     setMessage(prevState => ({ ...prevState, [data.message.id]: data.message }));
   }
 
@@ -65,12 +63,15 @@ const Chat = ({ route }) => {
     setMessage(prevState => ({ ...prevState, [messageObject.id]: messageObject }));
     socket.emit('send-message', {
       chat: {
-        members: chat.members.map(e => ({ number: e.number, countrycode: e.countrycode })),
+        members: chat.members.map(e => ({
+           number: e.number, 
+           countrycode: e.countrycode 
+        })),
         chattype: chat.chattype
       },
       message: messageObject
     },
-    ({ err }) => {
+    err => {
       if (err) Alert.alert(err);
     });
   }

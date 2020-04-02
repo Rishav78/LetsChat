@@ -38,8 +38,12 @@ const ChatsContextProvider = ({ children }) => {
       (err) => console.log(err));
   }
 
+  const createAndSavePersonalChat = () => {
+    
+  }
+
   const createAndSaveGroupChat = async (selected, name, cb) => {
-    const { prefix, phoneno } = JSON.parse(await AsyncStorage.getItem('phone'));
+    const { countrycode, number } = JSON.parse(await AsyncStorage.getItem('phone'));
     const username = await AsyncStorage.getItem('username');
     const id = uuidv4();
     const data = {
@@ -57,8 +61,8 @@ const ChatsContextProvider = ({ children }) => {
         id,
         name,
         owner: {
-          countrycode: prefix,
-          number: phoneno,
+          countrycode: countrycode,
+          number: number,
           name: username
         }
       }

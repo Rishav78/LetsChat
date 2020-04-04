@@ -11,11 +11,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { ContactsContext } from '../../src/contexts/Contacts';
 import Header from './Header';
 import User from '../../src/components/User';
-import { ChatsContext } from '../../src/contexts/Chats';
+import { ChatsStateContext, ChatsDispatchContext } from '../../src/contexts/Chats';
 
 const Contacts = ({ navigation }) => {
   const [search, setSearch] = useState('');
-  const { availableChats } = useContext(ChatsContext);
+  const availableChats = useContext(ChatsStateContext);
+  const { createPersonalChatData } = useContext(ChatsDispatchContext);
   const { contacts, loading, refresh } = useContext(ContactsContext);
   const contactArray = Object.values(contacts).sort((a, b) => a.name > b.name);
   const chats = Object.values(availableChats ? availableChats : {});
@@ -29,19 +30,7 @@ const Contacts = ({ navigation }) => {
       }
     }
     navigation.navigate('Chat', {
-      data: {
-        id: user,
-        chattype: 'personal',
-        createdAt: Date(),
-        updatedAt: Date(),
-        members: [{
-          id: uuidv4(),
-          number: contactArray[index].number,
-          countrycode: contactArray[index].countrycode,
-          createdAt: Date(),
-          updatedAt: Date(),
-        }]
-      }
+      data: createPersonalChatData(user, contactArray[index])
     });
   }
 

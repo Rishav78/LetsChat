@@ -11,9 +11,12 @@ const SocketContextProvider = props => {
   const { logout } = useContext(AuthContext);
 
   useEffect(() => {
-    const io = SocketIO('http://192.168.43.215:8000');
+    const io = SocketIO('http://192.168.43.215:8000', { 
+      transports: ['websocket', 'polling']
+    });
     AsyncStorage.getItem('token')
       .then(token => {
+        
         io.emit('authentication', { token });
         io.on('unauthorized', function (err) {
           console.log("There was an error with the authentication:", err.message);

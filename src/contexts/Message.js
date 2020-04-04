@@ -1,21 +1,22 @@
-import React, { useContext, createContext } from 'react';
+import React, { useContext, createContext, useMemo } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabseContext } from './Database';
 
-export const MessageContext = createContext();
+export const MessageStateContext = createContext();
+export const MessageDispatchContext = createContext();
 
 const MessageContextProvider = ({ children }) => {
   const { db } = useContext(DatabseContext);
 
   const createAndSaveMessage = async (message, chat) => {
     const { number, countrycode } = JSON.parse(await AsyncStorage.getItem('phone'));
-    const sender = `+${countrycode}${number}`;
     const data = { 
       id: uuidv4(),
-      message: chat.members.map( e => message), 
-      sender,
+      message, 
+      sender: `+${countrycode}${number}`,
+      sendbyme: 1,
       createdAt: Date(),
       updatedAt: Date()
     };
@@ -43,23 +44,38 @@ const MessageContextProvider = ({ children }) => {
     db.transaction( tx => { 
       tx.executeSql(`
         INSERT INTO 
-        MESSAGES
+        MESSAGES (
+          id,
+          chatid,
+          sender,
+          message,
+          sendbyme,
+          createdAt,
+          updatedAt
+        )
         VALUES (
           "${data.id}", 
           "${data.chatid}", 
-          "${data.sender}", 
+          "${data.sender}",
           "${data.message}",
+          ${data.sendbyme ? 1 : 0 },
           "${data.createdAt}",
           "${data.updatedAt}"
         )
-      `, [], err => console.log(err));
+      `);
     }, err => console.log(err));
   }
 
+  const providerValue = useMemo(() => ({
+    insert, getMessages, createAndSaveMessage
+  }), []);
+
   return (
-    <MessageContext.Provider value={{ getMessages, insert, createAndSaveMessage }}>
-      {children}
-    </MessageContext.Provider>
+    // <MessageStateContext.Provider>
+      <MessageDispatchContext.Provider value={providerValue}>
+        { children }
+      </MessageDispatchContext.Provider>
+    // </MessageStateContext.Provider>
   );
 }
 

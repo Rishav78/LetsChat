@@ -1,22 +1,21 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
   Text,
   StyleSheet
 } from 'react-native';
-import { AuthContext } from '../contexts/AuthContext';
 
 const Message = ({ data }) => {
-  const { number } = useContext(AuthContext);
   const date = new Date(data.createdAt);
+  const { sendbyme } = data;
   const hours = date.getHours() % 12,
     minutes = date.getMinutes(),
     ampm = date.getHours() >= 12 ? 'pm' : 'am';
-  console.log(number);
+    
   return (
     <View style={{ marginVertical: 8, paddingHorizontal: 10 }}>
-      <View style={{ alignItems: data.sender === `+${number.countrycode}${number.number}` ? 'flex-end' : 'flex-start' }}>
+      <View style={{ alignItems: sendbyme === 1 ? 'flex-end' : 'flex-start' }}>
       <TouchableOpacity
         style={{ padding: 8, backgroundColor: '#135349', borderRadius: 5 }}>
         <View style={{ flexDirection: 'row' }}>
@@ -57,4 +56,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default Message;
+export default React.memo(Message);

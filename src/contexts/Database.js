@@ -31,8 +31,7 @@ const DatabaseContextProvider = props => {
 
       tx.executeSql(`
         CREATE TABLE IF NOT EXISTS MEMBERS (
-          id TEXT NOT NULL PRIMARY KEY,
-          number TEXT NOT NULL,
+          number TEXT NOT NULL PRIMARY KEY,
           countrycode TEXT NOT NULL,
           chatid TEXT NOT NULL,
           createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -47,6 +46,7 @@ const DatabaseContextProvider = props => {
           chatid TEXT NOT NULL,
           sender TEXT NOT NULL,
           message TEXT NOT NULL,
+          sendbyme INTEGER NOT NULL,
           createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
           updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
         )

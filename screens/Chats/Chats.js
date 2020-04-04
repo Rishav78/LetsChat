@@ -9,14 +9,14 @@ import {
 import {
   FAB
 } from 'react-native-paper';
-import { ChatsContext } from '../../src/contexts/Chats';
+import { ChatsStateContext } from '../../src/contexts/Chats';
 import Chat from '../../src/components/Chat';
 import Header from './Header';
 import { SocketContext } from '../../src/contexts/Socket';
 
 const Chats = ({ navigation }) => {
   const { disconnectSocket: logout } = useContext(SocketContext);
-  const { availableChats } = useContext(ChatsContext);
+  const availableChats = useContext(ChatsStateContext);
   const [search, setSeach] = useState('');
 
   const chats = Object.values(availableChats).sort((a, b) => {
@@ -34,7 +34,7 @@ const Chats = ({ navigation }) => {
         renderItem={(data) =>
           <Chat
             data={data.item}
-            onPress={() => navigation.navigate('Chat', {id: data.item.id} )} />}
+            onPress={() => navigation.navigate('Chat', {data: data.item, exist: true } )} />}
         keyExtractor={item => item.id} />
       <FAB
         small

@@ -4,30 +4,32 @@ import {
   ActivityIndicator,
   View,
   FlatList,
-  Alert
+  Alert,
+  ScrollView
 } from 'react-native';
 import NetInfo from "@react-native-community/netinfo";
 import Header from './Header';
 import { SocketContext } from '../../src/contexts/Socket';
-import { ChatsContext } from '../../src/contexts/Chats';
+import { ChatsDispatchContext } from '../../src/contexts/Chats';
 import InputMessage from '../../src/components/InputMessage';
-import { MessageContext } from '../../src/contexts/Message';
+import { MessageDispatchContext } from '../../src/contexts/Message';
 import Message from '../../src/components/Message';
 
 const Chat = ({ route }) => {
-  const { availableChats, createPersonalChat, updateLastMessage } = useContext(ChatsContext);
-  const { getMessages, createAndSaveMessage } = useContext(MessageContext);
+  const { createPersonalChat, updateLastMessage } = useContext(ChatsDispatchContext);
+  const { getMessages, createAndSaveMessage, insert } = useContext(MessageDispatchContext);
   const { socket } = useContext(SocketContext);
-  const [chat, setChat] = useState(null);
+  const [chat, setChat] = useState(route.params.data);
+  const [active, setActive] = useState(route.params.exist);
   const [message, setMessage] = useState({});
 
   const messageArray = Object.values(message);
 
   const receiveMessage = data => {
-    if (data.chat.chattype !== 'personal' || chat.id !== data.message.sender) {
-      return;
+    const chatid = data.chat.chattype === 'personal' ? data.message.sender : data.chat.id;
+    if (chat.id === chatid) {
+      setMessage(prevState => ({ ...prevState, [data.message.id]: data.message }));
     }
-    setMessage(prevState => ({ ...prevState, [data.message.id]: data.message }));
   }
 
   useEffect(() => {
@@ -38,42 +40,54 @@ const Chat = ({ route }) => {
   }, [chat]);
 
   useEffect(_ => {
-    if(route.params.id) {
-      setChat(availableChats[route.params.id]);
-      getMessages(route.params.id, result => setMessage(result));
-      return;
-    }
-    setChat(route.params.data);
-  }, []);
-
-  const sendMessage = async message => {
-    if (!message) return;
-    const state = await NetInfo.fetch();
-    if(!state.isConnected) {
-      return Alert.alert(
-        'Network error', 
-        'Check your internet connection and try again');
-    }
-    const messageObject = await createAndSaveMessage(message, chat);
-    if (!availableChats[chat.id]) {
-      createPersonalChat(chat, () => {
-        updateLastMessage(chat.id, messageObject);
+    const { exist } = route.params;
+    if (exist) {
+      getMessages(chat.id, result => {
+        setMessage(result);
       });
     }
-    else {
-      updateLastMessage(chat.id, messageObject);
+  }, []);
+
+  const sendMessage = async text => {
+    // check if message is not empty
+    if (!text) return;
+
+    //check network conectivity
+    const state = await NetInfo.fetch();
+    if (!state.isConnected) {
+      return Alert.alert(
+        'Network error',
+        'Check your internet connection and try again');
     }
-    setMessage(prevState => ({ ...prevState, [messageObject.id]: messageObject }));
+
+    // generate message information
+    const { sendbyme, message, ...restinfo } = await createAndSaveMessage(text, chat);
+
+    // check if chat is already exist or not
+    if (!active) {
+      // create chat if not exist
+      await new Promise((resolve, reject) =>
+        createPersonalChat(chat, err => err ? reject(err) : resolve(null)));
+      setActive(true);
+    }
+
+    // update last message
+    updateLastMessage(chat.id, { sendbyme, message, ...restinfo });
+
+    // insert new message in array
+    setMessage(prevState => ({
+      ...prevState,
+      [restinfo.id]: { sendbyme, message, ...restinfo }
+    }));
+
+    // send the message to other users
     socket.emit('send-message', {
-      chat: {
-        members: chat.members,
-        chattype: chat.chattype
-      },
-      message: messageObject
+      chat: { members: chat.members, chattype: chat.chattype },
+      message: { ...restinfo, message: chat.members.map(e => message) }
     },
-    err => {
-      if (err) Alert.alert(err);
-    });
+      err => {
+        if (err) Alert.alert(err.message);
+      });
   }
 
   return (
@@ -87,14 +101,10 @@ const Chat = ({ route }) => {
         />
         <View style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>
-            <FlatList
-              style={{ flex: 1 }}
-              data={messageArray}
-              renderItem={(data) =>
-                <Message data={data.item} />
-              }
-              keyExtractor={item => item.id}
-            />
+            <ScrollView>
+              {messageArray.map((e, i) =>
+                <Message data={e} key={i} />)}
+            </ScrollView>
           </View>
           <View>
             <InputMessage
@@ -106,4 +116,4 @@ const Chat = ({ route }) => {
   );
 }
 
-export default Chat;
+export default React.memo(Chat, () => true);

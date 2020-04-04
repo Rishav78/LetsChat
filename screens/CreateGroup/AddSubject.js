@@ -14,13 +14,13 @@ import NetInfo from "@react-native-community/netinfo";
 import { FAB } from 'react-native-paper';
 import Header from './Header';
 import Select from '../../src/components/Select';
-import { ChatsContext } from '../../src/contexts/Chats';
+import { ChatsDispatchContext } from '../../src/contexts/Chats';
 import { SocketContext } from '../../src/contexts/Socket';
 
 const AddSubject = ({ route, navigation }) => {
   const [name, setName] = useState('');
   const { socket } = useContext(SocketContext);
-  const { createAndSaveGroupChat, setAvailableChats } = useContext(ChatsContext);
+  const { createAndSaveGroupChat } = useContext(ChatsDispatchContext);
   const { selected } = route.params;
 
   const createGroup = async () => {
@@ -42,9 +42,9 @@ const AddSubject = ({ route, navigation }) => {
         if(err) {
           return Alert.alert('Error', err.message);
         }
-        setAvailableChats( prevState => ({
-          ...prevState, [data.id]: data
-        }));
+        // setAvailableChats( prevState => ({
+        //   ...prevState, [data.id]: data
+        // }));
         navigation.navigate('Chat', {id: data.id});
       })
     });

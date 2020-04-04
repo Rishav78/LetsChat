@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import config from '../../config';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
   SafeAreaView,
@@ -39,7 +40,7 @@ const Basicprofile = () => {
 
   const updateInfo = async () => {
     const token = await AsyncStorage.getItem('token');
-    await fetch('http://192.168.43.215:8000/graphql', {
+    await fetch(config.API, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -63,7 +64,7 @@ const Basicprofile = () => {
 
   const insert = async () => {
     const token = await AsyncStorage.getItem('token');
-    const res = await fetch('http://192.168.43.215:8000/graphql', {
+    const res = await fetch(config.API, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

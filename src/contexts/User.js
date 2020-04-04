@@ -1,5 +1,6 @@
 import React, { createContext } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
+import config from '../../config';
 
 export const UserContext = createContext();
 
@@ -10,7 +11,7 @@ const UserContextProvider = ({ children }) => {
     if(!token) {
       return { err: 'unauthenticated'};
     }
-    const res = await fetch('http://192.168.43.215:8000/graphql', {
+    const res = await fetch(config.API, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

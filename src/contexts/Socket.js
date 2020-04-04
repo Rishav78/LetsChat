@@ -1,6 +1,7 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import SocketIO from 'socket.io-client';
 import AsyncStorage from '@react-native-community/async-storage';
+import config from '../../config';
 import { AuthContext } from './AuthContext';
 
 export const SocketContext = createContext();
@@ -11,7 +12,7 @@ const SocketContextProvider = props => {
   const { logout } = useContext(AuthContext);
 
   useEffect(() => {
-    const io = SocketIO('http://192.168.43.215:8000', { 
+    const io = SocketIO(config.SOCKET, { 
       transports: ['websocket', 'polling']
     });
     AsyncStorage.getItem('token')

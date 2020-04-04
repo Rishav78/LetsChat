@@ -1,6 +1,7 @@
 import React, { useState, createContext, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Alert } from 'react-native';
+import config from '../../config';
 import { DatabseContext } from './Database';
 
 export const AuthContext = createContext();
@@ -22,7 +23,7 @@ const AuthContextProvider = props => {
   useEffect(() => {logedin()}, []);
 
   const login = async phone => {
-    const res = await fetch('http://192.168.43.215:8000/graphql', {
+    const res = await fetch(config.API, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -44,7 +45,7 @@ const AuthContextProvider = props => {
 
   const logout = async () => {
     const token = await AsyncStorage.getItem('token');
-    const res = await fetch('http://192.168.43.215:8000/graphql', {
+    const res = await fetch(config.API, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -77,7 +78,7 @@ const AuthContextProvider = props => {
     if(!token) {
       return { err: 'unauthenticated'};
     }
-    const res = await fetch('http://192.168.43.215:8000/graphql', {
+    const res = await fetch(config.API, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

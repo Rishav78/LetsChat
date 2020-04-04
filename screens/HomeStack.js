@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Chats from './Chats/Chats';
 import ChatsContextProvider from '../src/contexts/Chats';
 import SocketContextProvider from '../src/contexts/Socket';
-import AddFriend from './AddFriend/AddFriend';
 import Chat from './Chat/Chat';
 import UserContextProvider from '../src/contexts/User';
 import Contacts from './Contacts/Contacts';
@@ -36,10 +35,6 @@ const Home = () => {
                   component={Contacts}
                   options={{ headerShown: false }}
                 />
-                <Stack.Screen
-                  name="AddFriend"
-                  component={AddFriend}
-                  options={{ headerShown: false }} />
                 <Stack.Screen
                   name="Chat"
                   component={Chat}

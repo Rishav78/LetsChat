@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   BackHandler
 } from 'react-native';
+import config from '../../config';
 
 import {
   TextInput,
@@ -43,7 +44,7 @@ const Verify = ({ route, navigation }) => {
   const onChangeOtp = async otp => {
     if (otp.length === 6) {
       setLoading(true);
-      const res = await fetch('http://192.168.43.215:8000/graphql', {
+      const res = await fetch(config.API, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

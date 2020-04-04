@@ -20,8 +20,8 @@ const Home = () => {
     <SocketContextProvider>
       <UserContextProvider>
         <ContactsContextProvider>
-          <ChatsContextProvider>
-            <MessageContextProvider>
+          <MessageContextProvider>
+            <ChatsContextProvider>
               <Stack.Navigator>
                 <Stack.Screen
                   name="Chats"
@@ -60,8 +60,8 @@ const Home = () => {
                   component={AddSubject}
                   options={{ headerShown: false }} />
               </Stack.Navigator>
-            </MessageContextProvider>
-          </ChatsContextProvider>
+            </ChatsContextProvider>
+          </MessageContextProvider>
         </ContactsContextProvider>
       </UserContextProvider>
     </SocketContextProvider>

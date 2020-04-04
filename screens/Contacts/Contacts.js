@@ -26,11 +26,11 @@ const Contacts = ({ navigation }) => {
     for (let i = 0; i < chats.length; i++) {
       const number = `+${chats[i].members[0].countrycode}${chats[i].members[0].number}`;
       if (chats[i].chattype === 'personal' && number === user) {
-        return navigation.navigate('Chat', { data: chats[i] });
+        return navigation.navigate('Chat', { data: chats[i], exist: true });
       }
     }
     navigation.navigate('Chat', {
-      data: createPersonalChatData(user, contactArray[index])
+      data: createPersonalChatData(user, [contactArray[index]])
     });
   }
 

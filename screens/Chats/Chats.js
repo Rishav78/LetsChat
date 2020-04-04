@@ -34,7 +34,7 @@ const Chats = ({ navigation }) => {
         renderItem={(data) =>
           <Chat
             data={data.item}
-            onPress={() => navigation.navigate('Chat', {data: data.item, exist: true } )} />}
+            onPress={() => navigation.navigate('Chat', { data: data.item, exist: true } )} />}
         keyExtractor={item => item.id} />
       <FAB
         small

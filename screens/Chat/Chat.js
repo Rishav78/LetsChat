@@ -61,7 +61,7 @@ const Chat = ({ route }) => {
     }
 
     // generate message information
-    const { sendbyme, message, ...restinfo } = await createAndSaveMessage(text, chat);
+    const { sendbyme, message, name, ...restinfo } = await createAndSaveMessage(text, chat);
 
     // check if chat is already exist or not
     if (!active) {
@@ -77,7 +77,7 @@ const Chat = ({ route }) => {
     // insert new message in array
     setMessage(prevState => ({
       ...prevState,
-      [restinfo.id]: { sendbyme, message, ...restinfo }
+      [restinfo.id]: { sendbyme, message, name, ...restinfo }
     }));
 
     // send the message to other users

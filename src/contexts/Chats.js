@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { DatabseContext } from './Database';
 import { ContactsContext } from './Contacts';
 import { SocketContext } from './Socket';
+import { MessageDispatchContext } from './Message';
 
 export const ChatsStateContext = createContext();
 export const ChatsDispatchContext = createContext();
@@ -35,6 +36,7 @@ const ChatsContextProvider = ({ children }) => {
   // const [state, dispatch] = useReducer(,)
   const { db } = useContext(DatabseContext);
   const { socket } = useContext(SocketContext);
+  const { insert } = useContext(MessageDispatchContext);
   const { contacts, loading } = useContext(ContactsContext);
 
   const chats = () => {
@@ -43,6 +45,7 @@ const ChatsContextProvider = ({ children }) => {
         const data = {};
         for (let i = 0; i < result.rows.length; i++) {
           const item = result.rows.item(i);
+          console.log(item)
           item.members = await new Promise((resolve, reject) => chatMembers(item.id, resolve));
           item.lastmessage = await new Promise((resolve, reject) => lastMessage(item.id, resolve));
           if (item.chattype === 'personal') {
@@ -62,9 +65,10 @@ const ChatsContextProvider = ({ children }) => {
       (err) => console.log(err));
   }
 
-  const createPersonalChatData = (chatid, members) => {
+  const createPersonalChatData = (id, members) => {
     return {
-      chatid,
+      id,
+      name: members[0].name,
       chattype: 'personal',
       createdAt: new Date().toString(),
       updatedAt: new Date().toString(),
@@ -241,10 +245,11 @@ const ChatsContextProvider = ({ children }) => {
     (err) => { if (cb) cb(err) },
     () => {
       setAvailableChats(prevState => {
-        const key = `+${data.members[0].countrycode}${data.members[0].number}`;
-        const name = contacts[key] ? contacts[key].name : key;
+        console.log(contacts)
+        console.log(data.id);
+        const name = contacts[data.id] ? contacts[data.id].name : data.id;
         return {
-          ...prevState, [key]: { ...data, name }
+          ...prevState, [data.id]: { ...data, name }
         }
       });
       if (cb) cb(null);
@@ -253,14 +258,13 @@ const ChatsContextProvider = ({ children }) => {
 
   const newMessage = async data => {
     const { chat, message } = data;
-    console.log(chat);
-    console.log(message);
     const chatid = chat.chattype === 'personal' ? message.sender : chat.id;
-    // if (!availableChats[chatid]) {
-    //   const newChatData = createPersonalChatData(chatid, chat.members);
-    //   await new Promise((resolve, reject) => createPersonalChat(newChatData, err => err ? reject(err) : resolve(null)));
-    // }
-    // updateLastMessage(chatid, message);
+    if (!availableChats[chatid]) {
+      const newChatData = createPersonalChatData(chatid, chat.members);
+      await new Promise((resolve, reject) => createPersonalChat(newChatData, err => err ? reject(err) : resolve(null)));
+    }
+    insert({ ...message, chatid });
+    updateLastMessage(chatid, message);
   }
 
   useEffect(() => {
@@ -283,7 +287,7 @@ const ChatsContextProvider = ({ children }) => {
     updateLastMessage,
     createAndSaveGroupChat,
     createPersonalChatData
-  }), []);
+  }), [contacts]);
 
   return (
     <ChatsStateContext.Provider value={availableChats}>

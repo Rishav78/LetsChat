@@ -8,28 +8,45 @@ export const SocketContext = createContext();
 
 const SocketContextProvider = props => {
   const [socket, setSocket] = useState(null);
+  const [logedin, setLogedin] = useState(false);
   const [connected, setConnected] = useState(false);
   const { logout } = useContext(AuthContext);
 
-  useEffect(() => {
-    const io = SocketIO(config.SOCKET, { 
-      transports: ['websocket', 'polling']
+  const connect = async () => {
+    const token = await AsyncStorage.getItem('token');
+    const socket = SocketIO(config.SOCKET, {
+      transports: ['websocket', 'polling'],
+      forceNew: true,
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      query: { token }
     });
-    AsyncStorage.getItem('token')
-      .then(token => {
-        
-        io.emit('authentication', { token });
-        io.on('unauthorized', function (err) {
-          console.log("There was an error with the authentication:", err.message);
-        });
-        setConnected(true);
-        setSocket(io);
-      })
-    return () => {
-      io.removeAllListeners('unauthorized');
-      io.disconnect();
-    }
+    setSocket(socket);
+    setConnected(true);
+  }
+
+  useEffect(() => {
+    connect();
   }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on('connect', function () {
+      console.log('connected')
+    });
+    socket.on('disconnect', function () {
+      if(logedin) {
+        return;
+      }
+      socket.connect();
+    });
+    return () => {
+      socket.removeAllListeners('disconnect');
+      socket.removeAllListeners('connect')
+      socket.removeAllListeners('unauthorized');
+      socket.disconnect();
+    }
+  }, [socket, logedin]);
 
   const disconnectSocket = () => {
     socket.disconnect();

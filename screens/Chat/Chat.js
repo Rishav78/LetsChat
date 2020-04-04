@@ -16,20 +16,32 @@ import { MessageDispatchContext } from '../../src/contexts/Message';
 import Message from '../../src/components/Message';
 
 const Chat = ({ route }) => {
-  const { createPersonalChat, updateLastMessage } = useContext(ChatsDispatchContext);
+  const { createPersonalChat, updateLastMessage, chatMembers } = useContext(ChatsDispatchContext); 
   const { getMessages, createAndSaveMessage, insert } = useContext(MessageDispatchContext);
   const { socket } = useContext(SocketContext);
   const [chat, setChat] = useState(route.params.data);
   const [active, setActive] = useState(route.params.exist);
+  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({});
 
   const messageArray = Object.values(message);
+  const membersArray = Object.values(chat.members ? chat.members : {});
 
   const receiveMessage = data => {
-    const chatid = data.chat.chattype === 'personal' ? data.message.sender : data.chat.id;
+    const key = `+${data.message.sender.countrycode}${data.message.sender.number}`;
+    const chatid = data.chat.chattype === 'personal' ? key : data.chat.id;
     if (chat.id === chatid) {
       setMessage(prevState => ({ ...prevState, [data.message.id]: data.message }));
     }
+  }
+
+  const fetchData = async () => {
+    const chat = route.params.data;
+    const members = await new Promise((resolve, reject) => chatMembers(chat.id, resolve));
+    const messages = await new Promise((resolve, reject) => getMessages(chat.id, resolve));
+    setChat({ ...chat, members });
+    setMessage(messages);
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -39,13 +51,13 @@ const Chat = ({ route }) => {
     }
   }, [chat]);
 
+
   useEffect(_ => {
-    const { exist } = route.params;
-    if (exist) {
-      getMessages(chat.id, result => {
-        setMessage(result);
-      });
+    if(!route.params.exist) {
+      setLoading(false);
+      return;
     }
+    fetchData();
   }, []);
 
   const sendMessage = async text => {
@@ -62,12 +74,13 @@ const Chat = ({ route }) => {
 
     // generate message information
     const { sendbyme, message, name, ...restinfo } = await createAndSaveMessage(text, chat);
+    // return;
 
     // check if chat is already exist or not
-    if (!active) {
+    if (chat.chattype === 'personal' && !active) {
       // create chat if not exist
       await new Promise((resolve, reject) =>
-        createPersonalChat(chat, err => err ? reject(err) : resolve(null)));
+        createPersonalChat(chat, membersArray[0], err => err ? reject(err) : resolve(null)));
       setActive(true);
     }
 
@@ -82,8 +95,8 @@ const Chat = ({ route }) => {
 
     // send the message to other users
     socket.emit('send-message', {
-      chat: { members: chat.members, chattype: chat.chattype },
-      message: { ...restinfo, message: chat.members.map(e => message) }
+      chat: { members: membersArray, chattype: chat.chattype },
+      message: { ...restinfo, message: membersArray.map(e => message) }
     },
       err => {
         if (err) Alert.alert(err.message);
@@ -91,13 +104,13 @@ const Chat = ({ route }) => {
   }
 
   return (
-    !chat ?
+    loading ?
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#0000ff" />
       </SafeAreaView> :
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
         <Header
-          data={chat.members[0]}
+          data={chat.members[chat.id]}
         />
         <View style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>

@@ -10,8 +10,8 @@ import { ContactsContext } from '../../src/contexts/Contacts';
 const Header = ({ data }) => {
   const { contacts } = useContext(ContactsContext);
   const [visible, setVisible] = useState(false);
-  const key = `+${data.countrycode}${data.number}`;
-  const name = contacts[key] ? contacts[key].name : key;
+  // const key = `+${data.countrycode}${data.number}`;
+  // const name = contacts[key] ? contacts[key].name : key;
   const navigation = useNavigation();
   return (
     <Appbar.Header>
@@ -19,7 +19,7 @@ const Header = ({ data }) => {
         onPress={navigation.goBack}
       />
       <Appbar.Content
-        title={`${name}`}
+        title={`${'name'}`}
         subtitle="online"
       />
       <Appbar.Action

@@ -1,4 +1,4 @@
-
+//@ts-check
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
@@ -45,18 +45,15 @@ const ChatsContextProvider = ({ children }) => {
         const data = {};
         for (let i = 0; i < result.rows.length; i++) {
           const item = result.rows.item(i);
-          console.log(item)
-          item.members = await new Promise((resolve, reject) => chatMembers(item.id, resolve));
           item.lastmessage = await new Promise((resolve, reject) => lastMessage(item.id, resolve));
           if (item.chattype === 'personal') {
-            const key = `+${item.members[0].countrycode}${item.members[0].number}`;
-            item.name = contacts[key] ? contacts[key].name : key;
+
+            item.name = contacts[item.id] ? contacts[item.id].name : item.id;
+            console.log(item.id)
           }
           else {
             item.group = await new Promise((resolve, reject) => groupInfo(item.id, resolve));
           }
-          // console.log(item);
-          // console.log('--------------------------');
           data[item.id] = item;
         }
         setAvailableChats(data);
@@ -65,24 +62,28 @@ const ChatsContextProvider = ({ children }) => {
       (err) => console.log(err));
   }
 
-  const createPersonalChatData = (id, members) => {
+  const createPersonalChatData = (id, member) => {
+    const key = `+${member.countrycode}${member.number}`;
     return {
       id,
-      name: members[0].name,
+      name: member.name,
       chattype: 'personal',
       createdAt: new Date().toString(),
       updatedAt: new Date().toString(),
-      members: members.map( member => ({ 
-        ...member,
-        createdAt: new Date().toString(),
-        updatedAt: new Date().toString()
-      }))
+      members: {
+        [key]: {
+          ...member,
+          createdAt: new Date().toString(),
+          updatedAt: new Date().toString()
+        }
+      }
     }
   }
 
   const createAndSaveGroupChat = async (selected, name, cb) => {
     const { countrycode, number } = JSON.parse(await AsyncStorage.getItem('phone'));
     const username = await AsyncStorage.getItem('username');
+    const id = uuidv4();
     const data = {
       id,
       chattype: 'group',
@@ -136,7 +137,15 @@ const ChatsContextProvider = ({ children }) => {
   const chatMembers = (chatid, cb) => {
     db.transaction(tx => {
       tx.executeSql(`SELECT * FROM MEMBERS WHERE chatid="${chatid}"`, [],
-        (tx, result) => cb(result.rows.raw()));
+        (tx, result) => {
+          const data = {};
+          for (let i = 0; i < result.rows.length; i++) {
+            const item = result.rows.item(i);
+            const key = `+${item.countrycode}${item.number}`;
+            data[key] = item;
+          }
+          cb(data);
+        });
     });
   }
 
@@ -184,6 +193,7 @@ const ChatsContextProvider = ({ children }) => {
           MEMBERS (
             countrycode,
             number,
+            name,
             chatid,
             createdAt,
             updatedAt
@@ -191,6 +201,7 @@ const ChatsContextProvider = ({ children }) => {
           VALUES (
             "${data.members[i].countrycode}",
             "${data.members[i].number}", 
+            "${data.members[i].name}",
             "${data.id}",
             "${data.members[i].createdAt}",
             "${data.members[i].updatedAt}"
@@ -205,7 +216,7 @@ const ChatsContextProvider = ({ children }) => {
       });
   }, [db]);
 
-  const createPersonalChat = (data, cb) => {
+  const createPersonalChat = (chat, member, cb) => {
     db.transaction(tx => {
       tx.executeSql(`
         INSERT INTO 
@@ -216,10 +227,10 @@ const ChatsContextProvider = ({ children }) => {
           updatedAt
         )
         VALUES (
-          "${data.id}", 
+          "${chat.id}", 
           "personal",
-          "${data.createdAt}",
-          "${data.updatedAt}"
+          "${chat.createdAt}",
+          "${chat.updatedAt}"
         )
       `, [], (tx, result) => console.log(result));
 
@@ -228,40 +239,49 @@ const ChatsContextProvider = ({ children }) => {
         MEMBERS (
           countrycode,
           number,
+          name,
           chatid,
           createdAt,
           updatedAt
         )
         VALUES ( 
-          "${data.members[0].countrycode}",
-          "${data.members[0].number}", 
-          "${data.id}",
-          "${data.members[0].createdAt}",
-          "${data.members[0].updatedAt}"
+          "${member.countrycode}",
+          "${member.number}", 
+          "${member.name}",
+          "${chat.id}",
+          "${member.createdAt}",
+          "${member.updatedAt}"
         )
       `, [],
         (tx, result) => console.log(result));
     },
-    (err) => { if (cb) cb(err) },
-    () => {
-      setAvailableChats(prevState => {
-        console.log(contacts)
-        console.log(data.id);
-        const name = contacts[data.id] ? contacts[data.id].name : data.id;
-        return {
-          ...prevState, [data.id]: { ...data, name }
-        }
+      (err) => { if (cb) cb(err) },
+      () => {
+        setAvailableChats(prevState => {
+          const name = contacts[chat.id] ? contacts[chat.id].name : chat.id;
+          return {
+            ...prevState, [chat.id]: { ...chat, name }
+          }
+        });
+        if (cb) cb(null);
       });
-      if (cb) cb(null);
-    });
   }
 
   const newMessage = async data => {
+    console.log('yess', data);
     const { chat, message } = data;
-    const chatid = chat.chattype === 'personal' ? message.sender : chat.id;
+    const key = `+${message.sender.countrycode}${message.sender.number}`;
+    const chatid = chat.chattype === 'personal' ? key : chat.id;
     if (!availableChats[chatid]) {
-      const newChatData = createPersonalChatData(chatid, chat.members);
-      await new Promise((resolve, reject) => createPersonalChat(newChatData, err => err ? reject(err) : resolve(null)));
+      if (chat.chattype === 'personal') {
+        const { members, ...chat } = createPersonalChatData(chatid, message.sender);
+        await new Promise((resolve, reject) =>
+          createPersonalChat(chat, members[key], err => err ? 
+            reject(err) : resolve(null)));
+      }
+      else {
+
+      }
     }
     insert({ ...message, chatid });
     updateLastMessage(chatid, message);
@@ -286,13 +306,14 @@ const ChatsContextProvider = ({ children }) => {
     createGroupChat,
     updateLastMessage,
     createAndSaveGroupChat,
-    createPersonalChatData
+    createPersonalChatData,
+    chatMembers
   }), [contacts]);
 
   return (
     <ChatsStateContext.Provider value={availableChats}>
       <ChatsDispatchContext.Provider value={providerValue}>
-        { children }
+        {children}
       </ChatsDispatchContext.Provider>
     </ChatsStateContext.Provider>
   );

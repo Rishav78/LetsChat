@@ -12,10 +12,13 @@ const MessageContextProvider = ({ children }) => {
 
   const createAndSaveMessage = async (message, chat) => {
     const { number, countrycode } = JSON.parse(await AsyncStorage.getItem('phone'));
+    const name = await AsyncStorage.getItem('username');
     const data = { 
       id: uuidv4(),
       message, 
-      sender: `+${countrycode}${number}`,
+      sender: {
+        name, countrycode, number
+      },
       sendbyme: 1,
       createdAt: Date(),
       updatedAt: Date()
@@ -56,7 +59,7 @@ const MessageContextProvider = ({ children }) => {
         VALUES (
           "${data.id}", 
           "${data.chatid}", 
-          "${data.sender}",
+          "${`+${data.sender.countrycode}${data.sender.number}`}",
           "${data.message}",
           ${data.sendbyme ? 1 : 0 },
           "${data.createdAt}",
@@ -72,7 +75,9 @@ const MessageContextProvider = ({ children }) => {
 
   return (
     // <MessageStateContext.Provider>
-      <MessageDispatchContext.Provider value={providerValue}>
+      <MessageDispatchContext.Provider value={{
+        insert, getMessages, createAndSaveMessage
+      }}>
         { children }
       </MessageDispatchContext.Provider>
     // </MessageStateContext.Provider>

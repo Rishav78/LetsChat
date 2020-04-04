@@ -43,6 +43,17 @@ const MessageContextProvider = ({ children }) => {
     }, err => console.log(err));
   }
 
+  const deleteMessages = data => {
+    db.transaction( tx => { 
+      for(let i=0;i<data.length;i++) {
+        tx.executeSql(`
+          DELETE FROM MESSAGES WHERE id="${data[i]}"
+        `);
+      }
+    },
+    err => console.log(err));
+  }
+
   const insert = data => {
     db.transaction( tx => { 
       tx.executeSql(`
@@ -70,14 +81,13 @@ const MessageContextProvider = ({ children }) => {
   }
 
   const providerValue = useMemo(() => ({
-    insert, getMessages, createAndSaveMessage
+    insert, getMessages, createAndSaveMessage,
+    deleteMessages
   }), []);
 
   return (
     // <MessageStateContext.Provider>
-      <MessageDispatchContext.Provider value={{
-        insert, getMessages, createAndSaveMessage
-      }}>
+      <MessageDispatchContext.Provider value={providerValue}>
         { children }
       </MessageDispatchContext.Provider>
     // </MessageStateContext.Provider>

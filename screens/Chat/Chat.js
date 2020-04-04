@@ -14,13 +14,15 @@ import { ChatsDispatchContext } from '../../src/contexts/Chats';
 import InputMessage from '../../src/components/InputMessage';
 import { MessageDispatchContext } from '../../src/contexts/Message';
 import Message from '../../src/components/Message';
+import ActionHeader from './ActionHeader';
 
 const Chat = ({ route }) => {
-  const { createPersonalChat, updateLastMessage, chatMembers } = useContext(ChatsDispatchContext); 
-  const { getMessages, createAndSaveMessage, insert } = useContext(MessageDispatchContext);
+  const { createPersonalChat, updateLastMessage, chatMembers } = useContext(ChatsDispatchContext);
+  const { getMessages, createAndSaveMessage, deleteMessages } = useContext(MessageDispatchContext);
   const { socket } = useContext(SocketContext);
   const [chat, setChat] = useState(route.params.data);
   const [active, setActive] = useState(route.params.exist);
+  const [selected, setSelected] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState({});
 
@@ -53,7 +55,7 @@ const Chat = ({ route }) => {
 
 
   useEffect(_ => {
-    if(!route.params.exist) {
+    if (!route.params.exist) {
       setLoading(false);
       return;
     }
@@ -103,20 +105,61 @@ const Chat = ({ route }) => {
       });
   }
 
+  const deleteMessage = () => {
+    setMessage(prevState => {
+      const newState = {...prevState};
+      for(let i=0;i<selected.length;i++) {
+        delete newState[selected[i]]
+      }
+      deleteMessages(selected);
+      setSelected([]);
+      return newState;
+    })
+  }
+
+  const selectMessage = id => {
+    setSelected(prevState => {
+      const newState = [...prevState, id];
+      console.log('add', newState);
+      return newState;
+    })
+  }
+
+  const unSelectMessage = id => {
+    setSelected(prevstate => {
+      const newState = prevstate.filter(e => e !== id);
+      console.log('remove',newState)
+      return newState;
+    });
+  }
+
   return (
     loading ?
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color="#0000ff" />
       </SafeAreaView> :
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
-        <Header
-          data={chat.members[chat.id]}
-        />
+        {selected.length === 0 ?
+          <Header
+            data={chat}
+          /> :
+          <ActionHeader
+            count={selected.length}
+            onDelete={() => deleteMessage()}
+            onBack={() => setSelected([])}
+          />
+        }
         <View style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>
             <ScrollView>
               {messageArray.map((e, i) =>
-                <Message data={e} key={i} />)}
+                <Message
+                  data={e}
+                  key={i}
+                  selectable={selected.length}
+                  onSelect={() => selectMessage(e.id)}
+                  onUnselect={() => unSelectMessage(e.id)}
+                />)}
             </ScrollView>
           </View>
           <View>

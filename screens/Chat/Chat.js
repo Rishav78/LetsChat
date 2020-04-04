@@ -15,6 +15,7 @@ import InputMessage from '../../src/components/InputMessage';
 import { MessageDispatchContext } from '../../src/contexts/Message';
 import Message from '../../src/components/Message';
 import ActionHeader from './ActionHeader';
+import Dialog from './Dialog';
 
 const Chat = ({ route }) => {
   const { createPersonalChat, updateLastMessage, chatMembers } = useContext(ChatsDispatchContext);
@@ -24,6 +25,7 @@ const Chat = ({ route }) => {
   const [active, setActive] = useState(route.params.exist);
   const [selected, setSelected] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState({});
 
   const messageArray = Object.values(message);
@@ -52,6 +54,16 @@ const Chat = ({ route }) => {
       socket.off('new-message', receiveMessage);
     }
   }, [chat]);
+
+  useEffect(() => {
+    if(messageArray.length === 0) {
+      return updateLastMessage(chat.id, null);
+    }
+
+    // update last message
+    updateLastMessage(chat.id, messageArray[messageArray.length-1]);
+
+  }, [messageArray]);
 
 
   useEffect(_ => {
@@ -86,9 +98,6 @@ const Chat = ({ route }) => {
       setActive(true);
     }
 
-    // update last message
-    updateLastMessage(chat.id, { sendbyme, message, ...restinfo });
-
     // insert new message in array
     setMessage(prevState => ({
       ...prevState,
@@ -112,6 +121,7 @@ const Chat = ({ route }) => {
         delete newState[selected[i]]
       }
       deleteMessages(selected);
+      setVisible(false);
       setSelected([]);
       return newState;
     })
@@ -133,6 +143,10 @@ const Chat = ({ route }) => {
     });
   }
 
+  const confirmDelete = () => {
+    setVisible(true);
+  }
+
   return (
     loading ?
       <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -145,7 +159,7 @@ const Chat = ({ route }) => {
           /> :
           <ActionHeader
             count={selected.length}
-            onDelete={() => deleteMessage()}
+            onDelete={() => confirmDelete()}
             onBack={() => setSelected([])}
           />
         }
@@ -168,6 +182,11 @@ const Chat = ({ route }) => {
             />
           </View>
         </View>
+        <Dialog
+          visible={visible}
+          setVisible={setVisible}
+          forme={() => deleteMessage()}
+        />
       </SafeAreaView>
   );
 }

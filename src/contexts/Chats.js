@@ -112,6 +112,7 @@ const ChatsContextProvider = ({ children }) => {
   const updateLastMessage = (chatid, message) => {
     setAvailableChats(prevSatate => {
       const chat = prevSatate[chatid];
+      if(!chat) return prevSatate;
       chat.lastmessage = message;
       return { ...prevSatate, [chat.id]: chat };
     });

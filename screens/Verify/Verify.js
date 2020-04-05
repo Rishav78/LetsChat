@@ -11,7 +11,7 @@ import {
   BackHandler
 } from 'react-native';
 import config from '../../config';
-
+import { useNavigation } from '@react-navigation/native';
 import {
   TextInput,
   IconButton
@@ -23,11 +23,18 @@ const Verify = ({ route, navigation }) => {
   const [number, setNumber] = useState('');
   const [countrycode, setcountryCode] = useState('');
 
+  const preventGoBack = () => {
+    return true;
+  }
+
   useState(() => {
-    BackHandler.addEventListener('hardwareBackPress', () => true);
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', () => true);
-    }
+    navigation.addListener('focus', () => {
+      BackHandler.addEventListener('hardwareBackPress', preventGoBack);
+    });
+  
+    navigation.addListener('blur', () => {
+      BackHandler.removeEventListener('hardwareBackPress', preventGoBack);
+    });
   }, []);
 
   useEffect(() => {

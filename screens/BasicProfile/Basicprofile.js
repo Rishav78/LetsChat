@@ -14,16 +14,23 @@ import { TextInput } from 'react-native-paper';
 import Header from './Header';
 import { AuthContext } from '../../src/contexts/AuthContext';
 
-const Basicprofile = () => {
+const Basicprofile = ({ navigation }) => {
   const { currentUser, setAuthenticated } = useContext(AuthContext);
   const [name, setName] = useState('');
   const [id, setId] = useState(null);
 
+  const preventGoBack = () => {
+    return true;
+  }
+
   useState(() => {
-    BackHandler.addEventListener('hardwareBackPress', () => true);
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', () => true);
-    }
+    navigation.addListener('focus', () => {
+      BackHandler.addEventListener('hardwareBackPress', preventGoBack);
+    });
+  
+    navigation.addListener('blur', () => {
+      BackHandler.removeEventListener('hardwareBackPress', preventGoBack);
+    });
   }, []);
 
   useEffect( () => {

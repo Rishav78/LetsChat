@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { RSA } from 'react-native-rsa-native';
 import config from '../../config';
 import AsyncStorage from '@react-native-community/async-storage';
 import {
@@ -19,6 +20,11 @@ const Basicprofile = ({ navigation }) => {
   const [name, setName] = useState('');
   const [id, setId] = useState(null);
 
+  const generateKeys = async () => {
+    const { private: privateKey, public: publicKey } = await RSA.generateKeys(1024);
+    return { privateKey, publicKey };
+  }
+
   const preventGoBack = () => {
     return true;
   }
@@ -27,26 +33,27 @@ const Basicprofile = ({ navigation }) => {
     navigation.addListener('focus', () => {
       BackHandler.addEventListener('hardwareBackPress', preventGoBack);
     });
-  
+
     navigation.addListener('blur', () => {
       BackHandler.removeEventListener('hardwareBackPress', preventGoBack);
     });
   }, []);
 
-  useEffect( () => {
+  useEffect(() => {
 
     currentUser()
-      .then( ({err, name}) => {
-        if(!err) {
+      .then(({ err, name }) => {
+        if (!err) {
           setName(name);
           setId(true);
         }
       })
-    
+
   }, []);
 
   const updateInfo = async () => {
     const token = await AsyncStorage.getItem('token');
+    const { privateKey, publicKey } = await generateKeys();
     await fetch(config.API, {
       method: 'POST',
       headers: {
@@ -56,7 +63,7 @@ const Basicprofile = ({ navigation }) => {
       body: JSON.stringify({
         query: `
           mutation {
-            updateUser(name: "${name}") {
+            updateUser(name: "${name}", publickey: """${publicKey}""") {
               err
               success
             }
@@ -64,6 +71,8 @@ const Basicprofile = ({ navigation }) => {
         `
       })
     });
+    // const data = await res.json();
+    AsyncStorage.setItem('privatekey', privateKey);
     AsyncStorage.setItem('status', 'updated');
     AsyncStorage.setItem('username', name);
     setAuthenticated(true);
@@ -71,6 +80,7 @@ const Basicprofile = ({ navigation }) => {
 
   const insert = async () => {
     const token = await AsyncStorage.getItem('token');
+    const { privateKey, publicKey } = await generateKeys();
     const res = await fetch(config.API, {
       method: 'POST',
       headers: {
@@ -80,7 +90,7 @@ const Basicprofile = ({ navigation }) => {
       body: JSON.stringify({
         query: `
           mutation {
-            insertUser(name: "${name}") {
+            insertUser(name: "${name}", publickey: """${publicKey}""") {
               err
               success
             }
@@ -89,6 +99,7 @@ const Basicprofile = ({ navigation }) => {
       })
     });
     const data = await res.json();
+    console.log(data);
     AsyncStorage.setItem('status', 'updated');
     setAuthenticated(true);
   }
@@ -96,7 +107,7 @@ const Basicprofile = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
       <Header />
-      <View style={{ flex: 1}}>
+      <View style={{ flex: 1 }}>
         <View style={{ alignItems: 'center' }}>
           <Image
             style={{ width: 150, height: 150, padding: 20 }}
@@ -109,7 +120,7 @@ const Basicprofile = ({ navigation }) => {
             value={name}
             onChangeText={setName}
             placeholder="Display name" />
-            
+
         </View>
         <View style={{ alignItems: 'center', marginBottom: 20 }}>
           <TouchableOpacity

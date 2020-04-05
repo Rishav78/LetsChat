@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   View,
   TouchableOpacity,
@@ -6,31 +6,19 @@ import {
   StyleSheet
 } from 'react-native';
 
-const Message = ({ data, selectable, onSelect, onUnselect }) => {
-  const [selected, setSelected] = useState(false);
+const Message = ({ data, selected, onPress, onLongPress }) => {
   const date = new Date(data.createdAt);
   const { sendbyme } = data;
   const hours = date.getHours() % 12,
     minutes = date.getMinutes(),
     ampm = date.getHours() >= 12 ? 'pm' : 'am';
 
-  const selectMessage = () => {
-    setSelected(prevState => {
-      if (!prevState) {
-        onSelect();
-      }
-      else {
-        onUnselect();
-      }
-      return !prevState;
-    });
-  }
-
   return (
     <TouchableOpacity
       activeOpacity={0.9}
-      onPress={() => selectMessage()}>
-      <View style={selectable && selected ? { backgroundColor: 'rgba(77, 148, 255, 0.2)' } : {}}>
+      onLongPress={onLongPress}
+      onPress={onPress}>
+      <View style={ selected ? { backgroundColor: 'rgba(77, 148, 255, 0.2)' } : {}}>
         <View style={{ marginVertical: 8, paddingHorizontal: 10 }}>
           <View style={{ alignItems: sendbyme === 1 ? 'flex-end' : 'flex-start' }}>
             <View

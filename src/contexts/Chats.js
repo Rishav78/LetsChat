@@ -242,6 +242,7 @@ const ChatsContextProvider = ({ children }) => {
           number,
           name,
           chatid,
+          publickey,
           createdAt,
           updatedAt
         )
@@ -250,6 +251,7 @@ const ChatsContextProvider = ({ children }) => {
           "${member.number}", 
           "${member.name}",
           "${chat.id}",
+          "${member.publickey}",
           "${member.createdAt}",
           "${member.updatedAt}"
         )

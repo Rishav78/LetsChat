@@ -9,6 +9,7 @@ export const SocketContext = createContext();
 const SocketContextProvider = props => {
   const [socket, setSocket] = useState(null);
   const [logedin, setLogedin] = useState(false);
+  const [logedout, setLogedout] = useState(true);
   const [connected, setConnected] = useState(false);
   const { logout } = useContext(AuthContext);
 
@@ -23,6 +24,7 @@ const SocketContextProvider = props => {
     });
     setSocket(socket);
     setConnected(true);
+    setLogedout(false);
   }
 
   useEffect(() => {
@@ -35,7 +37,7 @@ const SocketContextProvider = props => {
       console.log('connected')
     });
     socket.on('disconnect', function () {
-      if(logedin) {
+      if(logedin || logout) {
         return;
       }
       socket.connect();
@@ -46,7 +48,7 @@ const SocketContextProvider = props => {
       socket.removeAllListeners('unauthorized');
       socket.disconnect();
     }
-  }, [socket, logedin]);
+  }, [socket, logedin, logout]);
 
   const disconnectSocket = () => {
     socket.disconnect();

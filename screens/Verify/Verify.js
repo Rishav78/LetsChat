@@ -11,7 +11,6 @@ import {
   BackHandler
 } from 'react-native';
 import config from '../../config';
-import { useNavigation } from '@react-navigation/native';
 import {
   TextInput,
   IconButton

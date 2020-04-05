@@ -16,17 +16,16 @@ const ContactsContextProvider = ({ children }) => {
 
   const fetchContactsFromDatabase = () => {
     db.transaction(tx => {
-      tx.executeSql(`
-        SELECT * FROM CONTACTS
-    `, [], (tx, result) => {
-        const data = {};
-        for (let i = 0; i < result.rows.length; i++) {
-          const contact = result.rows.item(i);
-          data[`+${contact.countrycode}${contact.number}`] = contact;
-        }
-        setContacts(data);
-        setLoading(false);
-      });
+      tx.executeSql(`SELECT * FROM CONTACTS`, [],
+        (tx, result) => {
+          const data = {};
+          for (let i = 0; i < result.rows.length; i++) {
+            const contact = result.rows.item(i);
+            data[`+${contact.countrycode}${contact.number}`] = contact;
+          }
+          setContacts(data);
+          setLoading(false);
+        });
     }, err => {
       setLoading(false);
       console.log(err);
@@ -34,6 +33,7 @@ const ContactsContextProvider = ({ children }) => {
   }
 
   const refresh = () => {
+    // Request permission for accessing contacts
     PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
       {
@@ -43,23 +43,38 @@ const ContactsContextProvider = ({ children }) => {
       }
     ).then(() => {
       Contacts.checkPermission((err, res) => {
+        // if get authorized
         if (res === 'authorized') {
+          // set loading true
           setLoading(true);
+          // get all saved contacts
           Contacts.getAll(async (err, contactsArray) => {
+            // inital data
             const data = {};
+            // err checking
             if (err) {
               Alert.alert('Error', 'some error occurr try again later');
               return setLoading(false);
-            };
+            }
+            // Iterate over all the contacts
             for (let i = 0; i < contactsArray.length; i++) {
+              // Get all phone no
               const phone = contactsArray[i].phoneNumbers;
-              if(phone.length === 0) continue;
+              // check if phone no exist or not
+              if (phone.length === 0) continue;
               const { label } = phone[0];
+              // replace all the space eg +91 988******* => +91988*******
               const number = phone[0].number.replace(/ +/g, "");
+              // check if contact already exist in saved contact table
               if (contacts[number]) continue;
+              // fetch user info. If not exist return error
               const { err, ...info } = await user(number);
+              // user exist and is not in contact list
               if (!err && !contacts[`+${info.countrycode}${info.number}`]) {
+                // save user into contacts array
+                console.log(info);
                 insert(info);
+                // save data in data variable with number as key
                 data[`+${info.countrycode}${info.number}`] = { ...info, label };
               }
             }
@@ -71,16 +86,25 @@ const ContactsContextProvider = ({ children }) => {
     })
   }
 
-  const insert = ({ name, number, countrycode, status }) => {
+  const insert = ({ name, number, countrycode, status, publickey }) => {
     db.transaction(tx => {
       tx.executeSql(`
         INSERT INTO 
-        CONTACTS
+        CONTACTS (
+          number,
+          countrycode,
+          name,
+          status,
+          publickey,
+          createdAt,
+          updatedAt
+        )
         VALUES (
           "${number}",
           "${countrycode}",
           "${name}",
           "${status}",
+          "${publickey}",
           "${Date()}",
           "${Date()}"
         )

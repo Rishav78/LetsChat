@@ -35,6 +35,7 @@ const DatabaseContextProvider = props => {
           countrycode TEXT NOT NULL,
           name TEXT NOT NULL,
           chatid TEXT NOT NULL,
+          publickey TEXT NOT NULL,
           createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
           updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
         )
@@ -60,6 +61,7 @@ const DatabaseContextProvider = props => {
           countrycode TEXT NOT NULL,
           name TEXT NOT NULL,
           status TEXT NOT NULL,
+          publickey TEXT NOT NULL,
           createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
           updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
         )

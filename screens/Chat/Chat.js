@@ -151,20 +151,21 @@ const Chat = ({ route }) => {
     })
   }
 
-  const selectMessage = id => {
-    setSelected(prevState => {
-      const newState = [...prevState, id];
-      console.log('add', newState);
-      return newState;
-    })
-  }
-
-  const unSelectMessage = id => {
-    setSelected(prevstate => {
-      const newState = prevstate.filter(e => e !== id);
-      console.log('remove',newState)
-      return newState;
-    });
+  const markMessage = id => {
+    if(selected.includes(id)) {
+      setSelected(prevstate => {
+        const newState = prevstate.filter(e => e !== id);
+        console.log('remove',newState)
+        return newState;
+      });
+    }
+    else {
+      setSelected(prevState => {
+        const newState = [...prevState, id];
+        console.log('add', newState);
+        return newState;
+      })
+    }
   }
 
   const confirmDelete = () => {
@@ -194,9 +195,9 @@ const Chat = ({ route }) => {
                 <Message
                   data={e}
                   key={i}
-                  selectable={selected.length}
-                  onSelect={() => selectMessage(e.id)}
-                  onUnselect={() => unSelectMessage(e.id)}
+                  selected={selected.includes(e.id)}
+                  onLongPress={selected.length === 0 ? () => markMessage(id) : () => {}}
+                  onPress={() => markMessage(id)}
                 />)}
             </ScrollView>
           </View>

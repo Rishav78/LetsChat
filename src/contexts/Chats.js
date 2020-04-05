@@ -36,7 +36,7 @@ const ChatsContextProvider = ({ children }) => {
   // const [state, dispatch] = useReducer(,)
   const { db } = useContext(DatabseContext);
   const { socket } = useContext(SocketContext);
-  const { insert } = useContext(MessageDispatchContext);
+  const { insert, deleteMessages } = useContext(MessageDispatchContext);
   const { contacts, loading } = useContext(ContactsContext);
 
   const chats = () => {
@@ -112,7 +112,7 @@ const ChatsContextProvider = ({ children }) => {
   const updateLastMessage = (chatid, message) => {
     setAvailableChats(prevSatate => {
       const chat = prevSatate[chatid];
-      if(!chat) return prevSatate;
+      if(!chat) return prevSatate ;
       chat.lastmessage = message;
       return { ...prevSatate, [chat.id]: chat };
     });
@@ -288,13 +288,20 @@ const ChatsContextProvider = ({ children }) => {
     updateLastMessage(chatid, message);
   }
 
+  const deleteMessage = async data => {
+    console.log(data);
+    deleteMessages(data.messages);
+  }
+
   useEffect(() => {
     if (!socket) return;
 
     socket.on('new-message', newMessage);
+    socket.on('delete-messages', deleteMessage);
 
     return () => {
       socket.off('new-message', newMessage);
+      socket.off('delete-messages', deleteMessage);
     }
   }, [availableChats, socket]);
 

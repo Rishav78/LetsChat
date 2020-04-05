@@ -38,6 +38,16 @@ const Chat = ({ route }) => {
       setMessage(prevState => ({ ...prevState, [data.message.id]: data.message }));
     }
   }
+  
+  const delMessage = data => {
+    setMessage(prevState => {
+      const newState = {...prevState};
+      for(let i=0;i<data.messages.length;i++) {
+        delete newState[data.messages[i]]
+      }
+      return newState;
+    });
+  }
 
   const fetchData = async () => {
     const chat = route.params.data;
@@ -50,8 +60,11 @@ const Chat = ({ route }) => {
 
   useEffect(() => {
     socket.on('new-message', receiveMessage);
+    socket.on('delete-messages', delMessage);
+
     return () => {
       socket.off('new-message', receiveMessage);
+      socket.on('delete-messages', delMessage);
     }
   }, [chat]);
 
@@ -114,7 +127,18 @@ const Chat = ({ route }) => {
       });
   }
 
-  const deleteMessage = () => {
+  const deleteForEveryone = () => {
+    socket.emit('delete-messages', { 
+      chat: {
+        chattype: chat.chattype,
+        members: membersArray,
+      },
+      messages: selected ,
+    });
+    deleteForMe();
+  }
+
+  const deleteForMe = () => {
     setMessage(prevState => {
       const newState = {...prevState};
       for(let i=0;i<selected.length;i++) {
@@ -185,7 +209,8 @@ const Chat = ({ route }) => {
         <Dialog
           visible={visible}
           setVisible={setVisible}
-          forme={() => deleteMessage()}
+          forme={() => deleteForMe()}
+          foreveryone={() => deleteForEveryone()}
         />
       </SafeAreaView>
   );

@@ -1,3 +1,4 @@
+//@ts-check
 import React, { useEffect, useState, useContext } from 'react';
 import {
   SafeAreaView,
@@ -38,11 +39,11 @@ const Chat = ({ route }) => {
       setMessage(prevState => ({ ...prevState, [data.message.id]: data.message }));
     }
   }
-  
+
   const delMessage = data => {
     setMessage(prevState => {
-      const newState = {...prevState};
-      for(let i=0;i<data.messages.length;i++) {
+      const newState = { ...prevState };
+      for (let i = 0; i < data.messages.length; i++) {
         delete newState[data.messages[i]]
       }
       return newState;
@@ -69,12 +70,12 @@ const Chat = ({ route }) => {
   }, [chat]);
 
   useEffect(() => {
-    if(messageArray.length === 0) {
+    if (messageArray.length === 0) {
       return updateLastMessage(chat.id, null);
     }
 
     // update last message
-    updateLastMessage(chat.id, messageArray[messageArray.length-1]);
+    updateLastMessage(chat.id, messageArray[messageArray.length - 1]);
 
   }, [messageArray]);
 
@@ -87,9 +88,32 @@ const Chat = ({ route }) => {
     fetchData();
   }, []);
 
-  const sendMessage = async text => {
+  const SaveMessage = async (text, send) => {
     // check if message is not empty
     if (!text) return;
+
+    // generate message information
+    const message = await createAndSaveMessage(text, chat);
+
+    // check if chat is already exist or not
+    if (!active && chat.chattype === 'personal') {
+      // create chat if not exist
+      await new Promise((resolve, reject) =>
+        createPersonalChat(chat, membersArray[0], err => err ? reject(err) : resolve(null)));
+      setActive(true);
+    }
+
+    // insert new message in array
+    setMessage(prevState => ({ ...prevState, [message.id]: message }));
+
+    if(send) sendMessage(message);
+
+    return message;
+  }
+
+  const sendMessage = async messageinfo => {
+
+    const { sendbyme, message, name, ...restinfo } = messageinfo;
 
     //check network conectivity
     const state = await NetInfo.fetch();
@@ -98,24 +122,6 @@ const Chat = ({ route }) => {
         'Network error',
         'Check your internet connection and try again');
     }
-
-    // generate message information
-    const { sendbyme, message, name, ...restinfo } = await createAndSaveMessage(text, chat);
-    // return;
-
-    // check if chat is already exist or not
-    if (chat.chattype === 'personal' && !active) {
-      // create chat if not exist
-      await new Promise((resolve, reject) =>
-        createPersonalChat(chat, membersArray[0], err => err ? reject(err) : resolve(null)));
-      setActive(true);
-    }
-
-    // insert new message in array
-    setMessage(prevState => ({
-      ...prevState,
-      [restinfo.id]: { sendbyme, message, name, ...restinfo }
-    }));
 
     // send the message to other users
     socket.emit('send-message', {
@@ -128,20 +134,20 @@ const Chat = ({ route }) => {
   }
 
   const deleteForEveryone = () => {
-    socket.emit('delete-messages', { 
+    socket.emit('delete-messages', {
       chat: {
         chattype: chat.chattype,
         members: membersArray,
       },
-      messages: selected ,
+      messages: selected,
     });
     deleteForMe();
   }
 
   const deleteForMe = () => {
     setMessage(prevState => {
-      const newState = {...prevState};
-      for(let i=0;i<selected.length;i++) {
+      const newState = { ...prevState };
+      for (let i = 0; i < selected.length; i++) {
         delete newState[selected[i]]
       }
       deleteMessages(selected);
@@ -152,10 +158,10 @@ const Chat = ({ route }) => {
   }
 
   const markMessage = id => {
-    if(selected.includes(id)) {
+    if (selected.includes(id)) {
       setSelected(prevstate => {
         const newState = prevstate.filter(e => e !== id);
-        console.log('remove',newState)
+        console.log('remove', newState)
         return newState;
       });
     }
@@ -194,16 +200,17 @@ const Chat = ({ route }) => {
               {messageArray.map((e, i) =>
                 <Message
                   data={e}
+                  chat={chat}
                   key={i}
                   selected={selected.includes(e.id)}
-                  onLongPress={selected.length === 0 ? () => markMessage(e.id) : () => {}}
-                  onPress={selected.length === 0 ? () => {} : () => markMessage(e.id)}
+                  onLongPress={selected.length === 0 ? () => markMessage(e.id) : () => { }}
+                  onPress={selected.length === 0 ? () => { } : () => markMessage(e.id)}
                 />)}
             </ScrollView>
           </View>
           <View>
             <InputMessage
-              onPress={sendMessage}
+              onPress={text => SaveMessage(text, true)}
             />
           </View>
         </View>

@@ -1,17 +1,34 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import {
   View,
   TouchableOpacity,
   Text,
   StyleSheet
 } from 'react-native';
+import { SocketContext } from '../contexts/Socket';
+import { MessageDispatchContext } from '../contexts/Message';
 
-const Message = ({ data, selected, onPress, onLongPress }) => {
+const Message = ({ data, selected, onPress, onLongPress, chat }) => {
+  const { socket } = useContext(SocketContext);
+  const { updateNotified } = useContext(MessageDispatchContext);
   const date = new Date(data.createdAt);
   const { sendbyme } = data;
   const hours = date.getHours() % 12,
     minutes = date.getMinutes(),
     ampm = date.getHours() >= 12 ? 'pm' : 'am';
+
+  useEffect(() => {
+    if(data.sendbyme && !data.notified) {
+      socket.emit('message-received', { chat, message: data }, 
+      err => {
+        updateNotified(data.id);
+      })
+    }
+
+    if(!data.sendbyme && !data.notified) {
+      
+    }
+  }, []);
 
   return (
     <TouchableOpacity

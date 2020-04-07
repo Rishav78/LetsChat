@@ -48,6 +48,7 @@ const DatabaseContextProvider = props => {
           chatid TEXT NOT NULL,
           sender TEXT NOT NULL,
           message TEXT NOT NULL,
+          notified INTEGER NOT NULL DEFAULT 0,
           sendbyme INTEGER NOT NULL,
           createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
           updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -90,7 +91,7 @@ const DatabaseContextProvider = props => {
     err => console.log('err table -> ', err),
     () => console.log('table created'));
 
-    return () => {deleteAllData()};
+    return () => deleteAllData();
 
   }, []);
 

@@ -54,6 +54,17 @@ const MessageContextProvider = ({ children }) => {
     err => console.log(err));
   }
 
+  const updateNotified = id => {
+    db.transaction( tx => {
+      tx.executeSql(`
+        UPDATE MESSAGES SET
+        notofied=1
+        WHERE id="${id}"
+      `);
+    },
+    err => console.log(err));
+  }
+
   const insert = data => {
     db.transaction( tx => { 
       tx.executeSql(`
@@ -82,7 +93,7 @@ const MessageContextProvider = ({ children }) => {
 
   const providerValue = useMemo(() => ({
     insert, getMessages, createAndSaveMessage,
-    deleteMessages
+    deleteMessages, updateNotified
   }), []);
 
   return (

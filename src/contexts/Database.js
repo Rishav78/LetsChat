@@ -56,6 +56,16 @@ const DatabaseContextProvider = props => {
       (tx, result) => console.log(result));
 
       tx.executeSql(`
+          CREATE TABLE IF NOT EXISTS DELIVERED (
+            id TEXT NOT NULL,
+            user TEXT NOT NULL,
+            seen INTEGER NOT NULL DEFAULT 0,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+          )
+      `);
+
+      tx.executeSql(`
         CREATE TABLE IF NOT EXISTS CONTACTS (
           number TEXT NOT NULL PRIMARY KEY,
           countrycode TEXT NOT NULL,

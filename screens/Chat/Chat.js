@@ -197,7 +197,7 @@ const Chat = ({ route }) => {
                   key={i}
                   selected={selected.includes(e.id)}
                   onLongPress={selected.length === 0 ? () => markMessage(e.id) : () => {}}
-                  onPress={() => markMessage(e.id)}
+                  onPress={selected.length === 0 ? () => {} : () => markMessage(e.id)}
                 />)}
             </ScrollView>
           </View>

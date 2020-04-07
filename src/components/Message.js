@@ -23,7 +23,7 @@ const Message = ({ data, selected, onPress, onLongPress }) => {
           {
             !sendbyme ?
               <View style={{ alignItems: 'flex-start' }}>
-                <View style={{ flexDirection: 'row', marginRight: 80, backgroundColor: '#FFF', borderRadius: 5, padding: 3  }}>
+                <View style={{ flexDirection: 'row', marginRight: 80, backgroundColor: '#FFF', borderRadius: 5, padding: 3, flexWrap: 'wrap', justifyContent: 'flex-end'  }}>
                   <View style={{ padding: 5 }}>
                     <Text style={{ fontSize: 15 }}>{data.message}</Text>
                   </View>
@@ -33,7 +33,7 @@ const Message = ({ data, selected, onPress, onLongPress }) => {
                 </View>
               </View> :
               <View style={{ alignItems: 'flex-end' }}>
-              <View style={{ flexDirection: 'row', marginLeft: 80, backgroundColor: '#dcf8c6', borderRadius: 5, padding: 3  }}>
+              <View style={{ flexDirection: 'row', marginLeft: 80, backgroundColor: '#dcf8c6', borderRadius: 5, padding: 3, flexWrap: 'wrap', justifyContent: 'flex-end'  }}>
                 <View style={{ padding: 5 }}>
                   <Text style={{ fontSize: 15 }}>{data.message}</Text>
                 </View>

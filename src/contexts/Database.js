@@ -59,6 +59,7 @@ const DatabaseContextProvider = props => {
       tx.executeSql(`
           CREATE TABLE IF NOT EXISTS DELIVERED (
             id TEXT NOT NULL,
+            chat TEXT NOT NULL,
             user TEXT NOT NULL,
             seen INTEGER NOT NULL DEFAULT 0,
             createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -101,6 +102,7 @@ const DatabaseContextProvider = props => {
       // tx.executeSql(`DELETE FROM CONTACTS`);
       tx.executeSql(`DELETE FROM MEMBERS`);
       tx.executeSql(`DELETE FROM MESSAGES`);
+      tx.executeSql(`DELETE FROM DELIVERED`);
     }, err => console.log(err));
   }
 

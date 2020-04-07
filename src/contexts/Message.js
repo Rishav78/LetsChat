@@ -1,14 +1,16 @@
-import React, { useContext, createContext, useMemo } from 'react';
+import React, { useEffect, useContext, createContext, useMemo } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabseContext } from './Database';
+import { SocketContext } from './Socket';
 
 export const MessageStateContext = createContext();
 export const MessageDispatchContext = createContext();
 
 const MessageContextProvider = ({ children }) => {
   const { db } = useContext(DatabseContext);
+  const { socket } = useContext(SocketContext);
 
   const createAndSaveMessage = async (message, chat) => {
     const { number, countrycode } = JSON.parse(await AsyncStorage.getItem('phone'));
@@ -16,6 +18,8 @@ const MessageContextProvider = ({ children }) => {
     const data = { 
       id: uuidv4(),
       message, 
+      notified: 0,
+      deliveredTo: [],
       sender: {
         name, countrycode, number
       },
@@ -32,15 +36,27 @@ const MessageContextProvider = ({ children }) => {
       tx.executeSql(`
         SELECT * FROM MESSAGES
         WHERE chatid="${chatid}"
-      `, [], (tx, result) => {
+      `, [], 
+      async (tx, result) => {
         const data = {};
         for(let i=0; i<result.rows.length; i++) {
           const item = result.rows.item(i);
+          item.deliveredTo = await new Promise((resolve, reject) => deliveredTo(item.id, resolve));
           data[item.id] = item;
         }
         cb(data);
       });
     }, err => console.log(err));
+  }
+
+  const deliveredTo = (id, cb) => {
+    db.transaction( tx => {
+      tx.executeSql(`
+        SELECT * FROM DELIVERED
+        WHERE id="${id}"
+      `, [],
+      (tx, result) => cb(result.rows.raw()));
+    })
   }
 
   const deleteMessages = data => {
@@ -58,11 +74,33 @@ const MessageContextProvider = ({ children }) => {
     db.transaction( tx => {
       tx.executeSql(`
         UPDATE MESSAGES SET
-        notofied=1
+        notified=1
         WHERE id="${id}"
       `);
     },
     err => console.log(err));
+  }
+
+  const messageDelivered = data => {
+    db.transaction( tx => {
+      tx.executeSql(`
+        INSERT INTO
+        DELIVERED (
+          id,
+          chat,
+          user,
+          createdAt,
+          updatedAt
+        )
+        VALUES (
+          "${data.message.id}",
+          "${data.chat}",
+          "${data.user}",
+          "${new Date().toString()}",
+          "${new Date().toString()}"
+        )
+      `)
+    }, err => console.log(err));
   }
 
   const insert = data => {
@@ -90,6 +128,16 @@ const MessageContextProvider = ({ children }) => {
       `);
     }, err => console.log(err));
   }
+
+  useEffect(() => {
+
+    if(!socket) return;
+
+    socket.on('message-delivered', messageDelivered);
+
+    return () => socket.off('message-delivered', messageDelivered);
+
+  }, [socket]);
 
   const providerValue = useMemo(() => ({
     insert, getMessages, createAndSaveMessage,

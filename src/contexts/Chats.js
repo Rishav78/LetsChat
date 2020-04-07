@@ -36,7 +36,7 @@ const ChatsContextProvider = ({ children }) => {
   // const [state, dispatch] = useReducer(,)
   const { db } = useContext(DatabseContext);
   const { socket } = useContext(SocketContext);
-  const { insert, deleteMessages } = useContext(MessageDispatchContext);
+  const { insert, deleteMessages, updateNotified } = useContext(MessageDispatchContext);
   const { contacts, loading } = useContext(ContactsContext);
 
   const chats = () => {
@@ -112,7 +112,7 @@ const ChatsContextProvider = ({ children }) => {
   const updateLastMessage = (chatid, message) => {
     setAvailableChats(prevSatate => {
       const chat = prevSatate[chatid];
-      if(!chat) return prevSatate ;
+      if (!chat) return prevSatate;
       chat.lastmessage = message;
       return { ...prevSatate, [chat.id]: chat };
     });
@@ -279,13 +279,17 @@ const ChatsContextProvider = ({ children }) => {
       if (chat.chattype === 'personal') {
         const { members, ...chat } = createPersonalChatData(chatid, message.sender);
         await new Promise((resolve, reject) =>
-          createPersonalChat(chat, members[key], err => err ? 
+          createPersonalChat(chat, members[key], err => err ?
             reject(err) : resolve(null)));
       }
       else {
 
       }
     }
+    socket.emit('message-received', {
+      chat: chat.id,
+      message: { ...message, sender: key }
+    });
     insert({ ...message, chatid });
     updateLastMessage(chatid, message);
   }

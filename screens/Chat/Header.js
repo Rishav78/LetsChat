@@ -16,7 +16,7 @@ const Header = ({ data }) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    socket.emit('user-status', { id: Chat.id }, ({ status }) => {
+    socket.emit('user-status', { id: data.id }, ({ status }) => {
       setState(status ? 1 : 0);
     });
     socket.on('user-status', ({ id, status }) => {

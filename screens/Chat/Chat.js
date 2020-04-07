@@ -20,7 +20,8 @@ import Dialog from './Dialog';
 
 const Chat = ({ route }) => {
   const { createPersonalChat, updateLastMessage, chatMembers } = useContext(ChatsDispatchContext);
-  const { getMessages, createAndSaveMessage, deleteMessages } = useContext(MessageDispatchContext);
+  const { getMessages, createAndSaveMessage,
+    deleteMessages, updateNotified } = useContext(MessageDispatchContext);
   const { socket } = useContext(SocketContext);
   const [chat, setChat] = useState(route.params.data);
   const [active, setActive] = useState(route.params.exist);
@@ -79,6 +80,29 @@ const Chat = ({ route }) => {
 
   }, [messageArray]);
 
+  const messageDelivered = data => {
+    if (chat.chattype === 'personal') {
+      if (chat.id === data.user) {
+        setMessage(prevState => {
+          const newState = prevState[data.message.id];
+          newState.deliveredTo.push(data.user);
+          return { ...prevState, [data.message.id]: newState };
+        })
+      }
+    }
+    else {
+
+    }
+  }
+
+  useEffect(() => {
+
+    socket.on('message-delivered', messageDelivered);
+
+    return () => socket.off('message-delivered', messageDelivered);
+
+  }, [message]);
+
 
   useEffect(_ => {
     if (!route.params.exist) {
@@ -106,16 +130,17 @@ const Chat = ({ route }) => {
     // insert new message in array
     setMessage(prevState => ({ ...prevState, [message.id]: message }));
 
-    if(send) sendMessage(message);
+    // send message to user if send flag is true
+    if (send) sendMessage(message);
 
     return message;
   }
 
   const sendMessage = async messageinfo => {
 
-    const { sendbyme, message, name, ...restinfo } = messageinfo;
+    const { sendbyme, message, notified, deliveredTo, ...restinfo } = messageinfo;
 
-    //check network conectivity
+    //check network conectivity 
     const state = await NetInfo.fetch();
     if (!state.isConnected) {
       return Alert.alert(
@@ -129,7 +154,11 @@ const Chat = ({ route }) => {
       message: { ...restinfo, message: membersArray.map(e => message) }
     },
       err => {
-        if (err) Alert.alert(err.message);
+        updateNotified(messageinfo.id);
+        setMessage(prevState => {
+          const newState = { ...messageinfo, notified: 1 };
+          return { ...prevState, [messageinfo.id]: newState };
+        })
       });
   }
 
@@ -199,9 +228,10 @@ const Chat = ({ route }) => {
             <ScrollView>
               {messageArray.map((e, i) =>
                 <Message
+                  key={i}
                   data={e}
                   chat={chat}
-                  key={i}
+                  receiveByEveryOne={e.sendbyme ? membersArray.length === e.deliveredTo.length : null}
                   selected={selected.includes(e.id)}
                   onLongPress={selected.length === 0 ? () => markMessage(e.id) : () => { }}
                   onPress={selected.length === 0 ? () => { } : () => markMessage(e.id)}

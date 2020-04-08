@@ -17,6 +17,7 @@ import { MessageDispatchContext } from '../../src/contexts/Message';
 import Message from '../../src/components/Message';
 import ActionHeader from './ActionHeader';
 import Dialog from './Dialog';
+import GroupHeader from './GroupHeader';
 
 const Chat = ({ route }) => {
   const { createPersonalChat, updateLastMessage, chatMembers } = useContext(ChatsDispatchContext);
@@ -36,15 +37,8 @@ const Chat = ({ route }) => {
   const receiveMessage = data => {
     const key = `+${data.message.sender.countrycode}${data.message.sender.number}`;
     const chatid = data.chat.chattype === 'personal' ? key : data.chat.id;
-    if(chat.chattype === 'personal') {
-      if (chat.id === chatid) {
-        setMessage(prevState => ({ ...prevState, [data.message.id]: data.message }));
-      }
-    }
-    else {
-      if(data.chat.id === chat.id) {
-        setMessage(prevState => ({ ...prevState, [data.message.id]: data.message }));
-      }
+    if (chat.id === chatid) {
+      setMessage(prevState => ({ ...prevState, [data.message.id]: data.message }));
     }
   }
 
@@ -221,9 +215,14 @@ const Chat = ({ route }) => {
       </SafeAreaView> :
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
         {selected.length === 0 ?
+          
+          chat.chattype === 'personal' ?
           <Header
             data={chat}
           /> :
+          
+          <GroupHeader data={chat} /> :
+
           <ActionHeader
             count={selected.length}
             onDelete={() => confirmDelete()}

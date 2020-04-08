@@ -20,7 +20,7 @@ import { SocketContext } from '../../src/contexts/Socket';
 const AddSubject = ({ route, navigation }) => {
   const [name, setName] = useState('');
   const { socket } = useContext(SocketContext);
-  const { createAndSaveGroupChat } = useContext(ChatsDispatchContext);
+  const { createAndSaveGroupChat, setAvailableChats } = useContext(ChatsDispatchContext);
   const { selected } = route.params;
 
   const createGroup = async () => {
@@ -38,14 +38,15 @@ const AddSubject = ({ route, navigation }) => {
         'Check your internet connection and try again');
     }
     createAndSaveGroupChat(selected, name, data => {
+      console.log('inside')
       socket.emit('create-new-group', data, (err) => {
         if(err) {
           return Alert.alert('Error', err.message);
         }
-        // setAvailableChats( prevState => ({
-        //   ...prevState, [data.id]: data
-        // }));
-        navigation.navigate('Chat', {id: data.id});
+        setAvailableChats( prevState => ({
+          ...prevState, [data.id]: data
+        }));
+        navigation.navigate('Chat', { data });
       })
     });
   }
@@ -77,9 +78,9 @@ const AddSubject = ({ route, navigation }) => {
           <Text>Provide a group subject and optional group icon</Text>
         </View>
         <FAB
-          small
           icon="arrow-right"
           color="#FFF"
+          onPress={createAndSaveGroupChat}
           style={styles.next}
           onPress={createGroup}
         />
@@ -121,7 +122,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -30,
     right: 10,
-    padding: 10,
     color: '#FFF'
   }
 })

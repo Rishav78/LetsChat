@@ -6,7 +6,6 @@ import {
 import { Text} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SocketContext } from '../../src/contexts/Socket';
-import Chat from './Chat';
 
 const Header = ({ data }) => {
   
@@ -32,7 +31,7 @@ const Header = ({ data }) => {
   return (
     <Appbar.Header>
       <Appbar.BackAction
-        onPress={navigation.goBack}
+        onPress={() => navigation.popToTop()}
       />
       <Appbar.Content
         title={data.name}

@@ -36,8 +36,15 @@ const Chat = ({ route }) => {
   const receiveMessage = data => {
     const key = `+${data.message.sender.countrycode}${data.message.sender.number}`;
     const chatid = data.chat.chattype === 'personal' ? key : data.chat.id;
-    if (chat.id === chatid) {
-      setMessage(prevState => ({ ...prevState, [data.message.id]: data.message }));
+    if(chat.chattype === 'personal') {
+      if (chat.id === chatid) {
+        setMessage(prevState => ({ ...prevState, [data.message.id]: data.message }));
+      }
+    }
+    else {
+      if(data.chat.id === chat.id) {
+        setMessage(prevState => ({ ...prevState, [data.message.id]: data.message }));
+      }
     }
   }
 
@@ -150,7 +157,7 @@ const Chat = ({ route }) => {
 
     // send the message to other users
     socket.emit('send-message', {
-      chat: { members: membersArray, chattype: chat.chattype },
+      chat: { ...chat, members: membersArray },
       message: { ...restinfo, message: membersArray.map(e => message) }
     },
       err => {

@@ -54,6 +54,7 @@ const ChatsContextProvider = ({ children }) => {
           else {
             item.group = await new Promise((resolve, reject) => groupInfo(item.id, resolve));
           }
+          console.log(item);
           data[item.id] = item;
         }
         setAvailableChats(data);
@@ -82,6 +83,7 @@ const ChatsContextProvider = ({ children }) => {
 
   const createAndSaveGroupChat = async (selected, name, cb) => {
     const { countrycode, number } = JSON.parse(await AsyncStorage.getItem('phone'));
+    const publickey = await AsyncStorage.getItem('publickey');
     const username = await AsyncStorage.getItem('username');
     const id = uuidv4();
     const data = {
@@ -92,7 +94,8 @@ const ChatsContextProvider = ({ children }) => {
       members: selected.map(e => ({
         number: e.number,
         countrycode: e.countrycode,
-        name: e.name
+        name: e.name,
+        publickey: e.publickey
       })),
       group: {
         id,
@@ -100,7 +103,8 @@ const ChatsContextProvider = ({ children }) => {
         owner: {
           countrycode: countrycode,
           number: number,
-          name: username
+          name: username,
+          publickey
         }
       }
     }
@@ -196,6 +200,7 @@ const ChatsContextProvider = ({ children }) => {
             number,
             name,
             chatid,
+            publickey,
             createdAt,
             updatedAt
           )
@@ -204,6 +209,7 @@ const ChatsContextProvider = ({ children }) => {
             "${data.members[i].number}", 
             "${data.members[i].name}",
             "${data.id}",
+            "${data.members[i].publickey}",
             "${data.members[i].createdAt}",
             "${data.members[i].updatedAt}"
           )
@@ -282,9 +288,6 @@ const ChatsContextProvider = ({ children }) => {
           createPersonalChat(chat, members[key], err => err ?
             reject(err) : resolve(null)));
       }
-      else {
-
-      }
     }
     socket.emit('message-received', {
       chat: chat.id,
@@ -299,15 +302,25 @@ const ChatsContextProvider = ({ children }) => {
     deleteMessages(data.messages);
   }
 
+  const newGroup = async data => {
+    const { countrycode, number } = JSON.parse(await AsyncStorage.getItem('phone'));
+    const members = data.members.filter( e => e.number !== number );
+    data.members = [...members, data.group.owner];
+    createGroupChat(data);
+    setAvailableChats( prevState => ({ ...prevState, [data.id]: data }));
+  }
+
   useEffect(() => {
     if (!socket) return;
 
     socket.on('new-message', newMessage);
     socket.on('delete-messages', deleteMessage);
+    socket.on('new-group', newGroup);
 
     return () => {
       socket.off('new-message', newMessage);
       socket.off('delete-messages', deleteMessage);
+      socket.off('new-group', newGroup);
     }
   }, [availableChats, socket]);
 
@@ -321,7 +334,8 @@ const ChatsContextProvider = ({ children }) => {
     updateLastMessage,
     createAndSaveGroupChat,
     createPersonalChatData,
-    chatMembers
+    chatMembers,
+    setAvailableChats
   }), [contacts]);
 
   return (

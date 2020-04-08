@@ -73,6 +73,7 @@ const Basicprofile = ({ navigation }) => {
     });
     // const data = await res.json();
     AsyncStorage.setItem('privatekey', privateKey);
+    AsyncStorage.setItem('publickey', publicKey);
     AsyncStorage.setItem('status', 'updated');
     AsyncStorage.setItem('username', name);
     setAuthenticated(true);
@@ -99,8 +100,10 @@ const Basicprofile = ({ navigation }) => {
       })
     });
     const data = await res.json();
-    console.log(data);
+    AsyncStorage.setItem('privatekey', privateKey);
+    AsyncStorage.setItem('publickey', publicKey);
     AsyncStorage.setItem('status', 'updated');
+    AsyncStorage.setItem('username', name);
     setAuthenticated(true);
   }
 
